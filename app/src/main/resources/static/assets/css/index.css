@@ -1,53 +1,186 @@
-/* this is the style sheet file for index.htlm  */
+/* this is the style sheet file for index.html  */
 
-/* 
-**Global Reset (`*`)**
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
-* Remove all default margin and padding.
-* Use `border-box` for sizing to include padding and border in element size.
+html, body {
+    height: 100%;
+    font-family: 'Roboto', Arial, sans-serif;
+    color: #333;
+}
 
-**Base (`html, body`)**
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
 
-* Set height to 100% for full viewport layout.
-* Use the `'Roboto'` sans-serif font for modern, clean typography.
+h2 {
+    font-size: 48px;
+    margin-bottom: 50px;
+    color: #003e3e;  
+    font-weight: bold;
+    font-family: 'Alegreya', 'Roboto', sans-serif;
+    text-align: center;
+  }
 
-**Layout Wrapper (`.wrapper`)**
 
-* Use a vertical flexbox layout.
-* Ensure the wrapper covers at least the full height of the screen (`min-height: 100vh`).
+button {
+    background-color: #015c5d;  
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    padding: 10px 20px;
+    width: 200px;
+    margin-top: 10px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
 
-**Heading (`h2`)**
+button:hover {
+    background:#A62B1F;
+}
 
-* Set a large font size (`48px`) for prominence.
-* Add a bottom margin of `50px` for spacing.
-* Use a dark teal color (`#003e3e`).
-* Make the font bold and use a blended font stack (`'Alegreya', 'Roboto', sans-serif`) for elegant styling.
+button:focus {
+    outline: 2px solid #3498db;
+    outline-offset: 2px;
+}
+.main-content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: url('../images/background.jpg') no-repeat center center fixed;
+    background-size: cover;
+    text-align: center;
+    padding: 40px;
+}
 
-**Main Section (`.main-content`)**
+.dashboard-btn {
+    background-color: #015c5d;
+}
 
-* Allow the section to grow to fill space with `flex-grow: 1`.
-* Add `40px` of internal padding.
-* Center content both horizontally and vertically using `justify-content` and `align-items`.
-* Display items in a column direction.
-* Center all text.
-* Apply a full-screen background image with:
+.dashboard-btn:hover {
+    background-color: #003e3e;  
+}
 
-  * `cover` size
-  * `center` positioning
-  * no repeat
-  * `fixed` attachment to keep image still during scroll
+.modal {
+    display: none; 
+    position: fixed;
+    z-index: 999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background: rgba(0,0,0,0.6);
+    justify-content: center;
+    align-items: center;
+}
+  
+.modal-content {
+    background: #fff;
+    padding: 2rem;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 500px;
+    text-align: left;
+    position: relative;
+}
+  
+.close {
+    position: absolute;
+    right: 16px;
+    top: 10px;
+    font-size: 1.5rem;
+    color: #666;
+    cursor: pointer;
+}
+  
+.close:hover {
+    color: #000;
+}
 
-**Buttons (`button`)**
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    background: #2c3e50;
+    color: #fff;
+}
+  
+.header .logo {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+  
+.header nav a {
+    color: #fff;
+    margin-left: 1rem;
+    text-decoration: none;
+    font-size: 1rem;
+    transition: color 0.3s;
+}
+  
+.header nav a:hover {
+    color: #3498db;
+  }
+  
+  
+.footer {
+    background: #2c3e50;
+    color: #fff;
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    font-size: 0.9rem;
+}
+  
+.footer div {
+    margin: 0.5rem 0;
+}
+  
+/* Interactive Styles */
+input[type="text"],
+input[type="date"],
+select {
+    padding: 0.6rem 1rem;
+    margin: 0.5rem 0;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    width: 100%;
+    max-width: 300px;
+    transition: border-color 0.3s;
+}
+  
+input:focus,
+select:focus {
+    border-color: #3498db;
+    outline: none;
+}
+  
+  
+.checkbox-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
 
-* Style with a teal green background (`#015c5d`) and white text.
-* Remove borders and round the corners (`12px`).
-* Use `10px 20px` padding and set width to `200px`.
-* Add a top margin of `10px` for spacing.
-* Enable pointer cursor and readable font size (`16px`).
-* On hover, change background color to bold red (`#A62B1F`).
-
-**Dashboard Buttons (`.dashboard-btn`)**
-
-* Use the same base green background (`#015c5d`) as the default button.
-* On hover, darken the background to deep teal (`#003e3e`) for visual feedback.
- */
+@media (max-width: 768px) {
+    .header, .footer {
+      flex-direction: column;
+      text-align: center;
+    }
+  
+    button {
+      width: 100%;
+      max-width: 250px;
+    }
+  }
