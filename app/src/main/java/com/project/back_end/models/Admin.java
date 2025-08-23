@@ -31,7 +31,8 @@ public class Admin{
     @Column(nullable = false, length = 20)
     private Role role = Role.MODERATOR;
 
-    @Column(name = "created_at",updatable = false,insertable = false)
+    @Column(name = "created_at",updatable = false,insertable = false,
+            columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime createdAt;
 
     public enum Role {
