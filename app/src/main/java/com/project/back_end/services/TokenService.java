@@ -35,20 +35,11 @@ public class TokenService {
         this.patientRepository = patientRepository;
     }
 
-    // Generic token generator: subject = identifier (email or username)
-    public String generateToken(String identifier) {
-        return Jwts.builder()
-                .setSubject(identifier)
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 7L * 24 * 60 * 60 * 1000)) // 7 days
-                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
-                .compact();
-    }
 
-    // Overload: generate token with role claim
-    public String generateToken(String identifier, String role) {
+
+    public String generateToken(Long userId, String role) {
         return Jwts.builder()
-                .setSubject(identifier)
+                .setSubject(String.valueOf(userId)) // subject = ID now
                 .claim("role", role)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + 7L * 24 * 60 * 60 * 1000)) // 7 days
@@ -56,70 +47,61 @@ public class TokenService {
                 .compact();
     }
 
-    // Generate token for doctor (using email as subject)
-    public String generateTokenForDoctor(Doctor doctor) {
-        if (doctor == null || doctor.getEmail() == null) {
-            throw new IllegalArgumentException("Doctor or doctor email is null");
-        }
-        return generateToken(doctor.getEmail(), "doctor");
+ 
+
+    private Claims extractAllClaims(String token) {
+        return Jwts.parser()   
+                .setSigningKey(getSigningKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
     }
 
-    // Extract identifier (subject) from token
+    public Long extractUserId(String token) {
+        return Long.valueOf(extractAllClaims(token).getSubject());
+    }
+
+    public String extractRole(String token) {
+        return extractAllClaims(token).get("role", String.class);
+    }
+
     public String extractIdentifier(String token) {
-        return extractAllClaims(token).getSubject();
+        return extractAllClaims(token).getSubject(); // may be ID or email depending on your token
     }
 
-    public String extractEmail(String token) {
-        return extractIdentifier(token);
-    }
+ 
 
-    // Extract Patient ID from token (subject = patient email)
     public Long extractPatientId(String token) {
-        String email = extractIdentifier(token);
-        Patient p = patientRepository.findByEmail(email);
-        return p != null ? p.getId() : null;
+        return extractUserId(token);
     }
 
-    // Extract Doctor ID from token (subject = doctor email)
     public Long extractDoctorId(String token) {
-        String email = extractIdentifier(token);
-        Doctor d = doctorRepository.findByEmail(email);
-        return d != null ? d.getId() : null;
+        return extractUserId(token);
     }
 
-    // Validate token against DB
+    
+
     public boolean validateToken(String token, String userType) {
         try {
-            String identifier = extractIdentifier(token);
+            Long userId = extractUserId(token);
+            String role = extractRole(token);
 
-            if ("admin".equalsIgnoreCase(userType)) {
-                Admin admin = adminRepository.findByUsername(identifier);
-                return admin != null;
-            } else if ("doctor".equalsIgnoreCase(userType)) {
-                Doctor doctor = doctorRepository.findByEmail(identifier);
-                return doctor != null;
-            } else if ("patient".equalsIgnoreCase(userType)) {
-                Patient patient = patientRepository.findByEmail(identifier);
-                return patient != null;
+            if ("admin".equalsIgnoreCase(userType) && "admin".equalsIgnoreCase(role)) {
+                return adminRepository.findById(userId).isPresent();
+            } else if ("doctor".equalsIgnoreCase(userType) && "doctor".equalsIgnoreCase(role)) {
+                return doctorRepository.findById(userId).isPresent();
+            } else if ("patient".equalsIgnoreCase(userType) && "patient".equalsIgnoreCase(role)) {
+                return patientRepository.findById(userId).isPresent();
             }
         } catch (Exception e) {
             return false;
         }
         return false;
     }
+  
 
-    // Build signing key from secret
     private SecretKey getSigningKey() {
         byte[] keyBytes = secret.getBytes(StandardCharsets.UTF_8);
         return Keys.hmacShaKeyFor(keyBytes);
-    }
-
-    // Extract all claims from JWT
-    private Claims extractAllClaims(String token) {
-        return Jwts.parser()  
-                .setSigningKey(getSigningKey())
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
     }
 }

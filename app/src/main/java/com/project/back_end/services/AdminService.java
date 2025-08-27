@@ -26,7 +26,7 @@ public class AdminService {
         this.tokenService = tokenService;
     }
 
-    //Create Admin
+    // Create Admin
     public int createAdmin(Admin admin) {
         try {
             adminRepository.save(admin);
@@ -36,7 +36,7 @@ public class AdminService {
         }
     }
 
-    //Admin Login -> issue JWT
+    // Admin Login -> issue JWT
     public ResponseEntity<Map<String, String>> login(String username, String password) {
         Map<String, String> body = new HashMap<>();
         try {
@@ -46,21 +46,23 @@ public class AdminService {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(body);
             }
 
-            String token = tokenService.generateToken(admin.getUsername());
+            String token = tokenService.generateToken(admin.getUsername(), "admin");
             body.put("token", token);
+            body.put("message", "Login successful");
             return ResponseEntity.ok(body);
+
         } catch (Exception ex) {
             body.put("message", "Internal server error");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body);
         }
     }
 
-    
+    // Validate Admin Token
     public boolean validateAdminToken(String token) {
         return tokenService.validateToken(token, "admin");
     }
 
-   
+    // Get Admin details from token
     public Admin getAdminDetails(String token) {
         String username = tokenService.extractIdentifier(token);
         return adminRepository.findByUsername(username);
@@ -84,6 +86,7 @@ public class AdminService {
         try {
             doctorRepository.save(doctor);
             body.put("doctor", doctor);
+            body.put("message", "Doctor created successfully");
             return ResponseEntity.status(HttpStatus.CREATED).body(body);
         } catch (Exception ex) {
             body.put("message", "Failed to create doctor");
@@ -100,7 +103,7 @@ public class AdminService {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
             }
             doctorRepository.deleteById(doctorId);
-            body.put("message", "Doctor deleted");
+            body.put("message", "Doctor deleted successfully");
             return ResponseEntity.ok(body);
         } catch (Exception ex) {
             body.put("message", "Failed to delete doctor");
@@ -126,6 +129,7 @@ public class AdminService {
         try {
             patientRepository.save(patient);
             body.put("patient", patient);
+            body.put("message", "Patient created successfully");
             return ResponseEntity.status(HttpStatus.CREATED).body(body);
         } catch (Exception ex) {
             body.put("message", "Failed to create patient");
@@ -142,7 +146,7 @@ public class AdminService {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
             }
             patientRepository.deleteById(patientId);
-            body.put("message", "Patient deleted");
+            body.put("message", "Patient deleted successfully");
             return ResponseEntity.ok(body);
         } catch (Exception ex) {
             body.put("message", "Failed to delete patient");

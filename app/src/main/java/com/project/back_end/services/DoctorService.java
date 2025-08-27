@@ -5,11 +5,11 @@ import com.project.back_end.models.Appointment;
 import com.project.back_end.DTO.LoginDTO;
 import com.project.back_end.repo.DoctorRepository;
 import com.project.back_end.repo.AppointmentRepository;
-import com.project.back_end.services.TokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.*;
@@ -27,7 +27,7 @@ public class DoctorService {
     @Autowired
     private TokenService tokenService;
 
-    // Availability 
+    //  Get availability of doctor by date
     public List<String> getDoctorAvailability(Long doctorId, LocalDate date) {
         List<Appointment> appointments = appointmentRepository
                 .findByDoctorIdAndAppointmentTimeBetween(
@@ -36,13 +36,13 @@ public class DoctorService {
                         date.plusDays(1).atStartOfDay()
                 );
 
-        // Define slots: hourly 
+        // Define working hours slots
         List<String> slots = new ArrayList<>();
         for (int i = 9; i < 17; i++) {
             slots.add(String.format("%02d:00", i));
         }
 
-        // Remove booked slots
+        // Collect booked slots
         Set<String> booked = appointments.stream()
                 .map(appt -> appt.getAppointmentTime().toLocalTime().withMinute(0).toString())
                 .collect(Collectors.toSet());
@@ -52,23 +52,23 @@ public class DoctorService {
                 .collect(Collectors.toList());
     }
 
-
+    //  Save doctor
     public int saveDoctor(Doctor doctor) {
         if (doctorRepository.findByEmail(doctor.getEmail()) != null) {
-            return -1; // already exists
+            return -1; // doctor already exists
         }
         try {
             doctorRepository.save(doctor);
-            return 1;
+            return 1; // success
         } catch (Exception e) {
-            return 0;
+            return 0; // error
         }
     }
 
+    // Update doctor
     public int updateDoctor(Doctor doctor) {
-        Optional<Doctor> existing = doctorRepository.findById(doctor.getId());
-        if (existing.isEmpty()) {
-            return -1;
+        if (doctorRepository.findById(doctor.getId()).isEmpty()) {
+            return -1; // not found
         }
         try {
             doctorRepository.save(doctor);
@@ -78,25 +78,27 @@ public class DoctorService {
         }
     }
 
+    //  Get all doctors
     public List<Doctor> getDoctors() {
         return doctorRepository.findAll();
     }
 
+    // Delete doctor
     public int deleteDoctor(long id) {
         Optional<Doctor> doctor = doctorRepository.findById(id);
         if (doctor.isEmpty()) {
-            return -1;
+            return -1; // not found
         }
         try {
-            appointmentRepository.deleteAllByDoctorId(id);
+            appointmentRepository.deleteAllByDoctorId(id); // clear appointments
             doctorRepository.deleteById(id);
-            return 1;
+            return 1; // success
         } catch (Exception e) {
-            return 0;
+            return 0; // error
         }
     }
 
-    //Authentication 
+    //  Doctor login
     public ResponseEntity<Map<String, String>> validateDoctor(LoginDTO login) {
         Map<String, String> response = new HashMap<>();
         Doctor doctor = doctorRepository.findByEmail(login.getEmail());
@@ -112,7 +114,7 @@ public class DoctorService {
         return ResponseEntity.ok(response);
     }
 
-    // Search & Filters 
+   
     public List<Doctor> findDoctorByName(String name) {
         return doctorRepository.findByNameLike("%" + name + "%");
     }
@@ -123,8 +125,7 @@ public class DoctorService {
     }
 
     public List<Doctor> filterDoctorByNameAndTime(String name, String amOrPm) {
-        List<Doctor> doctors = doctorRepository.findByNameLike("%" + name + "%");
-        return filterDoctorByTime(doctors, amOrPm);
+        return filterDoctorByTime(doctorRepository.findByNameLike("%" + name + "%"), amOrPm);
     }
 
     public List<Doctor> filterDoctorByNameAndSpecialty(String name, String specialty) {
@@ -132,8 +133,7 @@ public class DoctorService {
     }
 
     public List<Doctor> filterDoctorByTimeAndSpecialty(String specialty, String amOrPm) {
-        List<Doctor> doctors = doctorRepository.findBySpecialtyIgnoreCase(specialty);
-        return filterDoctorByTime(doctors, amOrPm);
+        return filterDoctorByTime(doctorRepository.findBySpecialtyIgnoreCase(specialty), amOrPm);
     }
 
     public List<Doctor> filterDoctorBySpecialty(String specialty) {
@@ -141,8 +141,7 @@ public class DoctorService {
     }
 
     public List<Doctor> filterDoctorsByTime(String amOrPm) {
-        List<Doctor> doctors = doctorRepository.findAll();
-        return filterDoctorByTime(doctors, amOrPm);
+        return filterDoctorByTime(doctorRepository.findAll(), amOrPm);
     }
 
 
@@ -158,7 +157,7 @@ public class DoctorService {
                     } else if ("PM".equalsIgnoreCase(amOrPm)) {
                         return end.isAfter(LocalTime.NOON);
                     }
-                    return true;
+                    return true; 
                 })
                 .collect(Collectors.toList());
     }

@@ -1,10 +1,11 @@
 package com.project.back_end.controller;
 
-import com.project.back_end.models.Admin;
 import com.project.back_end.services.AdminService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.Map;
 
 @RestController
@@ -19,8 +20,17 @@ public class AdminController {
     }
 
 
+    //Admin login
     @PostMapping("/login")
-    public ResponseEntity<Map<String, String>> adminLogin(@RequestBody Admin admin) {
-        return adminService.validateAdmin(admin);
+    public ResponseEntity<?> adminLogin(@RequestBody Map<String, String> loginRequest) {
+        String email = loginRequest.get("email");
+        String password = loginRequest.get("password");
+
+        if (email == null || password == null || email.isBlank() || password.isBlank()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("error", "Email and password are required"));
+        }
+
+        return adminService.login(email, password);
     }
 }

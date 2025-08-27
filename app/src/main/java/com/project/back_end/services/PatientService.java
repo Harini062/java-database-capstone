@@ -1,6 +1,7 @@
 package com.project.back_end.services;
 
 import com.project.back_end.DTO.AppointmentDTO;
+import com.project.back_end.DTO.LoginDTO;
 import com.project.back_end.models.Appointment;
 import com.project.back_end.models.Doctor;
 import com.project.back_end.models.Patient;
@@ -10,6 +11,7 @@ import com.project.back_end.repo.PatientRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -32,8 +34,11 @@ public class PatientService {
         this.tokenService = tokenService;
     }
 
-    //Create Patient
+    //  Create Patient
     public int createPatient(Patient patient) {
+        if (patientRepository.findByEmail(patient.getEmail()) != null) {
+            return -1; // already exists
+        }
         try {
             patientRepository.save(patient);
             return 1;
@@ -42,20 +47,34 @@ public class PatientService {
         }
     }
 
-    //Get Patient Appointments (token-aware)
-    public ResponseEntity<Map<String, Object>> getPatientAppointment(Long id, String token) {
+    // Patient Login & Token Generation
+    public ResponseEntity<Map<String, String>> validatePatient(LoginDTO login) {
+        Map<String, String> response = new HashMap<>();
+        Patient patient = patientRepository.findByEmail(login.getEmail());
+
+        if (patient == null || !patient.getPassword().equals(login.getPassword())) {
+            response.put("message", "Invalid email or password");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+        }
+
+        String token = tokenService.generateToken(patient.getId(), "patient");
+        response.put("token", token);
+        response.put("message", "Login successful");
+        return ResponseEntity.ok(response);
+    }
+
+    // Get Patient Appointments (token-aware)
+    public ResponseEntity<Map<String, Object>> getPatientAppointments(Long patientId, String token) {
         Map<String, Object> body = new HashMap<>();
         try {
             Long tokenPatientId = tokenService.extractPatientId(token);
-            if (tokenPatientId == null || !Objects.equals(tokenPatientId, id)) {
+            if (tokenPatientId == null || !Objects.equals(tokenPatientId, patientId)) {
                 body.put("message", "Unauthorized");
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(body);
             }
 
-            List<Appointment> appts = appointmentRepository.findByPatientId(id);
-            List<AppointmentDTO> dto = appts.stream()
-                    .map(this::toDTO)
-                    .collect(Collectors.toList());
+            List<AppointmentDTO> dto = appointmentRepository.findByPatientId(patientId)
+                    .stream().map(this::toDTO).collect(Collectors.toList());
 
             body.put("appointments", dto);
             return ResponseEntity.ok(body);
@@ -65,39 +84,24 @@ public class PatientService {
         }
     }
 
-    public ResponseEntity<Map<String, Object>> getPatientAppointment(Long id) {
-        Map<String, Object> body = new HashMap<>();
-        try {
-            List<Appointment> appts = appointmentRepository.findByPatientId(id);
-            List<AppointmentDTO> dto = appts.stream()
-                    .map(this::toDTO)
-                    .collect(Collectors.toList());
-            body.put("appointments", dto);
-            return ResponseEntity.ok(body);
-        } catch (Exception ex) {
-            body.put("message", "Internal server error");
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body);
-        }
-    }
-
-    //Filter by Condition ("past" or "future")
-    public ResponseEntity<Map<String, Object>> filterByCondition(String condition, Long id) {
+    // Filter by Condition ("past" or "future")
+    public ResponseEntity<Map<String, Object>> filterByCondition(String condition, Long patientId) {
         Map<String, Object> body = new HashMap<>();
         try {
             int status;
             if ("past".equalsIgnoreCase(condition)) {
-                status = 1; // Completed
+                status = 1; // completed
             } else if ("future".equalsIgnoreCase(condition) || "upcoming".equalsIgnoreCase(condition)) {
-                status = 0; // Scheduled
+                status = 0; // scheduled
             } else {
-                body.put("message", "Invalid condition. Use 'past' or 'future'.");
+                body.put("message", "Invalid condition. Use 'past' or 'future'");
                 return ResponseEntity.badRequest().body(body);
             }
 
-            List<Appointment> appts =
-                    appointmentRepository.findByPatient_IdAndStatusOrderByAppointmentTimeAsc(id, status);
+            List<AppointmentDTO> dto = appointmentRepository
+                    .findByPatient_IdAndStatusOrderByAppointmentTimeAsc(patientId, status)
+                    .stream().map(this::toDTO).collect(Collectors.toList());
 
-            List<AppointmentDTO> dto = appts.stream().map(this::toDTO).collect(Collectors.toList());
             body.put("appointments", dto);
             return ResponseEntity.ok(body);
         } catch (Exception ex) {
@@ -106,14 +110,14 @@ public class PatientService {
         }
     }
 
-    //Filter by Doctor Name (partial, case-insensitive)
-    public ResponseEntity<Map<String, Object>> filterByDoctor(String name, Long patientId) {
+    // Filter by Doctor Name
+    public ResponseEntity<Map<String, Object>> filterByDoctor(String doctorName, Long patientId) {
         Map<String, Object> body = new HashMap<>();
         try {
-            List<Appointment> appts =
-                    appointmentRepository.filterByDoctorNameAndPatientId(name, patientId);
+            List<AppointmentDTO> dto = appointmentRepository
+                    .filterByDoctorNameAndPatientId(doctorName, patientId)
+                    .stream().map(this::toDTO).collect(Collectors.toList());
 
-            List<AppointmentDTO> dto = appts.stream().map(this::toDTO).collect(Collectors.toList());
             body.put("appointments", dto);
             return ResponseEntity.ok(body);
         } catch (Exception ex) {
@@ -122,10 +126,8 @@ public class PatientService {
         }
     }
 
-    // Filter by Doctor Name and Condition
-    public ResponseEntity<Map<String, Object>> filterByDoctorAndCondition(String condition,
-                                                                          String name,
-                                                                          long patientId) {
+    // Filter by Doctor + Condition
+    public ResponseEntity<Map<String, Object>> filterByDoctorAndCondition(String condition, String doctorName, Long patientId) {
         Map<String, Object> body = new HashMap<>();
         try {
             int status;
@@ -134,14 +136,14 @@ public class PatientService {
             } else if ("future".equalsIgnoreCase(condition) || "upcoming".equalsIgnoreCase(condition)) {
                 status = 0;
             } else {
-                body.put("message", "Invalid condition. Use 'past' or 'future'.");
+                body.put("message", "Invalid condition");
                 return ResponseEntity.badRequest().body(body);
             }
 
-            List<Appointment> appts =
-                    appointmentRepository.filterByDoctorNameAndPatientIdAndStatus(name, patientId, status);
+            List<AppointmentDTO> dto = appointmentRepository
+                    .filterByDoctorNameAndPatientIdAndStatus(doctorName, patientId, status)
+                    .stream().map(this::toDTO).collect(Collectors.toList());
 
-            List<AppointmentDTO> dto = appts.stream().map(this::toDTO).collect(Collectors.toList());
             body.put("appointments", dto);
             return ResponseEntity.ok(body);
         } catch (Exception ex) {
@@ -150,65 +152,8 @@ public class PatientService {
         }
     }
 
-    //Get Patient Details from token
-    public ResponseEntity<Map<String, Object>> getPatientDetailsResponse(String token) {
-        Map<String, Object> body = new HashMap<>();
-        try {
-            String email = tokenService.extractIdentifier(token);
-            Patient p = patientRepository.findByEmail(email);
-            if (p == null) {
-                body.put("message", "Patient not found");
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
-            }
-            body.put("patient", p);
-            return ResponseEntity.ok(body);
-        } catch (Exception ex) {
-            body.put("message", "Internal server error");
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body);
-        }
-    }
-
-
-    public Patient getPatientDetails(String token) {
-        String email = tokenService.extractIdentifier(token);
-        return patientRepository.findByEmail(email);
-    }
-
-
-    public boolean existsByEmailOrPhone(String email, String phone) {
-        Patient p = patientRepository.findByEmailOrPhone(email, phone);
-        return p != null;
-    }
-
-
-    public ResponseEntity<Map<String, String>> validatePatientLogin(Map<String, String> login) {
-        Map<String, String> body = new HashMap<>();
-        try {
-            String identifier = login.get("identifier");
-            String password = login.get("password");
-
-            if (identifier == null || password == null) {
-                body.put("message", "Identifier and password are required");
-                return ResponseEntity.badRequest().body(body);
-            }
-
-            Patient patient = patientRepository.findByEmail(identifier);
-            if (patient == null || !password.equals(patient.getPassword())) {
-                body.put("message", "Invalid credentials");
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(body);
-            }
-
-            String token = tokenService.generateToken(patient.getEmail());
-            body.put("token", token);
-            return ResponseEntity.ok(body);
-        } catch (Exception ex) {
-            body.put("message", "Internal server error");
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body);
-        }
-    }
-
- 
-    public ResponseEntity<Map<String, Object>> filterPatient(String condition, String name, String token) {
+    
+    public ResponseEntity<Map<String, Object>> filterPatient(String condition, String doctorName, String token) {
         Map<String, Object> body = new HashMap<>();
         try {
             Long patientId = tokenService.extractPatientId(token);
@@ -217,12 +162,12 @@ public class PatientService {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(body);
             }
 
-            if (name == null || name.isBlank()) {
+            if (doctorName == null || doctorName.isBlank()) {
                 return filterByCondition(condition, patientId);
             } else if (condition == null || condition.isBlank()) {
-                return filterByDoctor(name, patientId);
+                return filterByDoctor(doctorName, patientId);
             } else {
-                return filterByDoctorAndCondition(condition, name, patientId);
+                return filterByDoctorAndCondition(condition, doctorName, patientId);
             }
         } catch (Exception ex) {
             body.put("message", "Internal server error");
@@ -230,26 +175,50 @@ public class PatientService {
         }
     }
 
+    //  Get Patient Details
+    public ResponseEntity<Map<String, Object>> getPatientDetailsResponse(String token) {
+        Map<String, Object> body = new HashMap<>();
+        try {
+            Long patientId = tokenService.extractPatientId(token);
+            if (patientId == null) {
+                body.put("message", "Unauthorized");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(body);
+            }
+
+            Patient patient = patientRepository.findById(patientId).orElse(null);
+            if (patient == null) {
+                body.put("message", "Patient not found");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
+            }
+
+            body.put("patient", patient);
+            return ResponseEntity.ok(body);
+        } catch (Exception ex) {
+            body.put("message", "Internal server error");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body);
+        }
+    }
+
+    
+    public boolean existsByEmailOrPhone(String email, String phone) {
+        return patientRepository.findByEmailOrPhone(email, phone) != null;
+    }
+
     private AppointmentDTO toDTO(Appointment a) {
         Doctor d = a.getDoctor();
         Patient p = a.getPatient();
 
-        Long id = a.getId();
-        Long doctorId = (d != null ? d.getId() : null);
-        String doctorName = (d != null ? d.getName() : null);
-        Long patientId = (p != null ? p.getId() : null);
-        String patientName = (p != null ? p.getName() : null);
-        String patientEmail = (p != null ? p.getEmail() : null);
-        String patientPhone = (p != null ? p.getPhone() : null);
-        String patientAddress = (p != null ? p.getAddress() : null);
-
-        LocalDateTime time = a.getAppointmentTime();
-        int status = (a.getStatus() == null ? 0 : a.getStatus());
-
         return new AppointmentDTO(
-                id, doctorId, doctorName,
-                patientId, patientName, patientEmail, patientPhone, patientAddress,
-                time, status
+                a.getId(),
+                d != null ? d.getId() : null,
+                d != null ? d.getName() : null,
+                p != null ? p.getId() : null,
+                p != null ? p.getName() : null,
+                p != null ? p.getEmail() : null,
+                p != null ? p.getPhone() : null,
+                p != null ? p.getAddress() : null,
+                a.getAppointmentTime(),
+                a.getStatus() == null ? 0 : a.getStatus()
         );
     }
 }
