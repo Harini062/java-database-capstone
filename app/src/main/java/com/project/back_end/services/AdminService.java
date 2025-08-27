@@ -46,7 +46,7 @@ public class AdminService {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(body);
             }
 
-            String token = tokenService.generateToken(admin.getUsername(), "admin");
+            String token = tokenService.generateToken(admin.getId(), "admin");
             body.put("token", token);
             body.put("message", "Login successful");
             return ResponseEntity.ok(body);

@@ -99,16 +99,18 @@ public class DoctorService {
     }
 
     //  Doctor login
-    public ResponseEntity<Map<String, String>> validateDoctor(LoginDTO login) {
+    public ResponseEntity<Map<String, String>> validateDoctor(Map<String, String> login) {
         Map<String, String> response = new HashMap<>();
-        Doctor doctor = doctorRepository.findByEmail(login.getEmail());
-
-        if (doctor == null || !doctor.getPassword().equals(login.getPassword())) {
+        String email = login.get("email");
+        String password = login.get("password");
+    
+        Doctor doctor = doctorRepository.findByEmail(email);
+        if (doctor == null || !Objects.equals(doctor.getPassword(), password)) {
             response.put("message", "Invalid email or password");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
         }
-
-        String token = tokenService.generateToken(doctor.getId(), "doctor");
+    
+        String token = tokenService.generateToken(doctor., "doctor");
         response.put("token", token);
         response.put("message", "Login successful");
         return ResponseEntity.ok(response);
@@ -146,19 +148,24 @@ public class DoctorService {
 
 
     private List<Doctor> filterDoctorByTime(List<Doctor> doctors, String amOrPm) {
-        return doctors.stream()
-                .filter(doc -> {
-                    LocalTime start = doc.getAvailableFrom();
-                    LocalTime end = doc.getAvailableTo();
-                    if (start == null || end == null) return false;
-
-                    if ("AM".equalsIgnoreCase(amOrPm)) {
-                        return start.isBefore(LocalTime.NOON);
-                    } else if ("PM".equalsIgnoreCase(amOrPm)) {
-                        return end.isAfter(LocalTime.NOON);
-                    }
-                    return true; 
-                })
-                .collect(Collectors.toList());
+        return doctors;
     }
+
+    public List<Doctor> filterDoctor(String name, String amOrPm, String specialty) {
+        name = (name == null ? "" : name);
+        specialty = (specialty == null ? "" : specialty);
+    
+        List<Doctor> base;
+        if (!name.isBlank() && !specialty.isBlank()) {
+            base = doctorRepository.findByNameContainingIgnoreCaseAndSpecialtyIgnoreCase(name, specialty);
+        } else if (!name.isBlank()) {
+            base = doctorRepository.findByNameLike("%" + name + "%");
+        } else if (!specialty.isBlank()) {
+            base = doctorRepository.findBySpecialtyIgnoreCase(specialty);
+        } else {
+            base = doctorRepository.findAll();
+        }
+        return filterDoctorByTime(base, amOrPm);
+    }
+    
 }

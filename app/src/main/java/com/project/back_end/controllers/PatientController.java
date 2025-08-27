@@ -46,16 +46,14 @@ public class PatientController {
             return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body(Map.of("error", "Patient with email or phone already exists"));
         }
-
-        boolean created = patientService.createPatient(patient);
-        if (!created) {
+        int created = patientService.createPatient(patient);
+        if (created != 1) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("error", "Could not create patient"));
         }
-
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(Map.of("message", "Signup successful"));
+        return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("message", "Signup successful"));
     }
+    
 
     //Patient login
     @PostMapping("/login")
@@ -65,32 +63,21 @@ public class PatientController {
 
     //Get all appointments for a patient
     @GetMapping("/{id}/appointments/{token}")
-    public ResponseEntity<?> getPatientAppointments(
-            @PathVariable Long id,
-            @PathVariable String token) {
-
+    public ResponseEntity<?> getPatientAppointments(@PathVariable Long id, @PathVariable String token) {
         if (!tokenService.validateToken(token, "patient")) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(Map.of("error", "Invalid or expired token"));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Invalid or expired token"));
         }
-
-        List<Appointment> appointments = patientService.getPatientAppointment(id);
-        return ResponseEntity.ok(appointments);
+        return patientService.getPatientAppointment(id);
     }
 
     //Filter patient appointments
     @GetMapping("/appointments/filter/{condition}/{name}/{token}")
-    public ResponseEntity<?> filterPatientAppointments(
-            @PathVariable String condition,
-            @PathVariable String name,
-            @PathVariable String token) {
-
-        if (!tokenService.validateToken(token, "patient")) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(Map.of("error", "Invalid or expired token"));
-        }
-
-        List<Appointment> filteredAppointments = patientService.filterPatient(condition, name);
-        return ResponseEntity.ok(filteredAppointments);
+    public ResponseEntity<?> filterPatientAppointments(@PathVariable String condition,
+                                                   @PathVariable String name,
+                                                   @PathVariable String token) {
+    if (!tokenService.validateToken(token, "patient")) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Invalid or expired token"));
+    }
+    return patientService.filterPatient(condition, name, token);
     }
 }

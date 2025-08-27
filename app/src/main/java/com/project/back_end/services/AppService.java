@@ -55,7 +55,7 @@ public class AppService {
         try {
             Admin admin = adminRepository.findByUsername(receivedAdmin.getUsername());
             if (admin != null && admin.getPassword().equals(receivedAdmin.getPassword())) {
-                String token = tokenService.generateToken(admin.getUsername(), "admin");
+                String token = tokenService.generateToken(admin.getId(), "admin");
                 response.put("token", token);
                 return ResponseEntity.ok(response);
             }
@@ -71,7 +71,7 @@ public class AppService {
     public ResponseEntity<Map<String, Object>> filterDoctor(String name, String specialty, String time) {
         Map<String, Object> response = new HashMap<>();
         try {
-            List<Doctor> doctors = doctorService.filterDoctorsByNameSpecilityandTime(name, specialty, time);
+            List<Doctor> doctors = doctorService.filterDoctorsByNameSpecilityAndTime(name, specialty, time);
             response.put("doctors", doctors);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
@@ -92,7 +92,8 @@ public class AppService {
         }
 
         Doctor doctor = doctorOpt.get();
-        List<String> availableSlots = doctorService.getDoctorAvailability(doctor.getId());
+        List<String> availableSlots = doctorService.getDoctorAvailability(
+            doctor.getId(),appointment.getAppointmentTime().toLocalDate());
 
         if (availableSlots.contains(appointment.getAppointmentTime().toString())) {
             return 1; // valid
@@ -112,7 +113,7 @@ public class AppService {
         try {
             Patient patient = patientRepository.findByEmail(login.getEmail());
             if (patient != null && patient.getPassword().equals(login.getPassword())) {
-                String token = tokenService.generateToken(patient.getEmail(), "patient");
+                String token = tokenService.generateToken(patient.getId(), "patient");
                 response.put("token", token);
                 return ResponseEntity.ok(response);
             }
@@ -128,7 +129,7 @@ public class AppService {
     public ResponseEntity<Map<String, Object>> filterPatient(String condition, String name, String token) {
         Map<String, Object> response = new HashMap<>();
         try {
-            String email = tokenService.extractEmail(token);
+            String email = tokenService.extractIdentifier(token);
             Patient patient = patientRepository.findByEmail(email);
 
             if (patient == null) {

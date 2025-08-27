@@ -24,60 +24,36 @@ public class AppointmentController {
     }
 
     //Fetch appointments for a doctor on a given date (Doctor only)
-    @GetMapping("/doctor/{date}/{patientName}/{token}")
-    public ResponseEntity<?> getAppointments(
-            @PathVariable String date,
-            @PathVariable String patientName,
-            @PathVariable String token) {
-
+    @GetMapping("/{date}/{patientName}/{token}")
+    public ResponseEntity<?> getAppointments(@PathVariable String date,
+                                            @PathVariable String patientName,
+                                            @PathVariable String token) {
         if (!tokenService.validateToken(token, "doctor")) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(Map.of("error", "Only doctors can access appointments"));
+                    .body(Map.of("error", "Invalid or expired token. Only doctors can access appointments."));
         }
-
-        try {
-            LocalDate localDate = LocalDate.parse(date);
-            Map<String, Object> response = appointmentService.getAppointment(patientName, localDate, token);
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(Map.of("error", "Invalid date format. Expected yyyy-MM-dd"));
-        }
+        java.time.LocalDate localDate = java.time.LocalDate.parse(date);
+        return ResponseEntity.ok(appointmentService.getAppointment(patientName, localDate));
     }
 
     //Book an appointment (Patient only)
-    @PostMapping("/book/{token}")
-    public ResponseEntity<?> bookAppointment(
-            @PathVariable String token,
-            @RequestBody Appointment appointment) {
-
+    @PostMapping("/{token}")
+    public ResponseEntity<?> bookAppointment(@PathVariable String token, @RequestBody Appointment appointment) {
         if (!tokenService.validateToken(token, "patient")) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(Map.of("error", "Only patients can book appointments"));
+                    .body(Map.of("error", "Invalid or expired token. Only patients can book appointments."));
         }
-
-        int result = appointmentService.bookAppointment(appointment);
-        if (result == 1) {
-            return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(Map.of("message", "Appointment booked successfully"));
-        } else {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("error", "Failed to book appointment"));
-        }
+        return appointmentService.bookAppointment(appointment, token);
     }
 
     //Update an appointment (Patient only)
-    @PutMapping("/update/{token}")
-    public ResponseEntity<?> updateAppointment(
-            @PathVariable String token,
-            @RequestBody Appointment appointment) {
-
+    @PutMapping("/{token}")
+    public ResponseEntity<?> updateAppointment(@PathVariable String token, @RequestBody Appointment appointment) {
         if (!tokenService.validateToken(token, "patient")) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(Map.of("error", "Only patients can update appointments"));
+                    .body(Map.of("error", "Invalid or expired token. Only patients can update appointments."));
         }
-
-        return appointmentService.updateAppointment(appointment);
+        return appointmentService.updateAppointment(appointment, token);
     }
 
     //Cancel an appointment (Patient only)

@@ -35,7 +35,7 @@ public class DoctorController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(Map.of("error", "Invalid or expired token"));
         }
-
+        java.time.LocalDate localDate = java.time.LocalDate.parse(date);    
         return ResponseEntity.ok(doctorService.getDoctorAvailability(doctorId, date));
     }
 
@@ -46,24 +46,15 @@ public class DoctorController {
     }
 
     //Add a new doctor (Admin only)
-    @PostMapping("/add/{token}")
-    public ResponseEntity<?> addDoctor(
-            @PathVariable String token,
-            @RequestBody Doctor doctor) {
-
+    @PostMapping("/{token}")
+    public ResponseEntity<?> addDoctor(@PathVariable String token, @RequestBody Doctor doctor) {
         if (!tokenService.validateToken(token, "admin")) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(Map.of("error", "Only admin can add doctors"));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Only admin can add doctors."));
         }
-
-        boolean added = doctorService.saveDoctor(doctor);
-        if (!added) {
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body(Map.of("error", "Doctor already exists"));
-        }
-
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(Map.of("message", "Doctor added successfully"));
+        int added = doctorService.saveDoctor(doctor);
+        if (added == -1) return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("error", "Doctor already exists."));
+        if (added != 1) return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "Internal error."));
+        return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("message", "Doctor added to db."));
     }
 
     //Doctor login
@@ -73,45 +64,29 @@ public class DoctorController {
     }
 
     //Update doctor details (Admin only)
-    @PutMapping("/update/{token}")
-    public ResponseEntity<?> updateDoctor(
-            @PathVariable String token,
-            @RequestBody Doctor doctor) {
-
+    @PutMapping("/{token}")
+    public ResponseEntity<?> updateDoctor(@PathVariable String token, @RequestBody Doctor doctor) {
         if (!tokenService.validateToken(token, "admin")) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(Map.of("error", "Only admin can update doctors"));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Only admin can update doctor details."));
         }
-
-        boolean updated = doctorService.updateDoctor(doctor);
-        if (!updated) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(Map.of("error", "Doctor not found"));
-        }
-
-        return ResponseEntity.ok(Map.of("message", "Doctor updated successfully"));
+        int updated = doctorService.updateDoctor(doctor);
+        if (updated == -1) return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "Doctor not found."));
+        if (updated != 1) return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "Internal error."));
+        return ResponseEntity.ok(Map.of("message", "Doctor updated successfully."));
     }
 
     //Delete doctor (Admin only)
-    @DeleteMapping("/delete/{id}/{token}")
-    public ResponseEntity<?> deleteDoctor(
-            @PathVariable Long id,
-            @PathVariable String token) {
-
+    @DeleteMapping("/{id}/{token}")
+    public ResponseEntity<?> deleteDoctor(@PathVariable Long id, @PathVariable String token) {
         if (!tokenService.validateToken(token, "admin")) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(Map.of("error", "Only admin can delete doctors"));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Only admin can delete doctor details."));
         }
-
-        boolean deleted = doctorService.deleteDoctor(id);
-        if (!deleted) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(Map.of("error", "Doctor not found with id: " + id));
-        }
-
-        return ResponseEntity.ok(Map.of("message", "Doctor deleted successfully"));
+        int deleted = doctorService.deleteDoctor(id);
+        if (deleted == -1) return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "Doctor not found with id: " + id));
+        if (deleted != 1) return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "Internal error."));
+        return ResponseEntity.ok(Map.of("message", "Doctor deleted successfully."));
     }
-
+    
     //Filter doctors by name, time, and speciality
     @GetMapping("/filter/{name}/{time}/{speciality}")
     public ResponseEntity<?> filterDoctors(
