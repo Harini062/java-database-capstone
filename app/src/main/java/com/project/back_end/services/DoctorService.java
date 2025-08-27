@@ -121,7 +121,7 @@ public class DoctorService {
         return doctorRepository.findByNameLike("%" + name + "%");
     }
 
-    public List<Doctor> filterDoctorsByNameSpecialtyAndTime(String name, String specialty, String amOrPm) {
+    public List<Doctor> filterDoctorsByNameSpecialityAndTime(String name, String specialty, String amOrPm) {
         List<Doctor> doctors = doctorRepository.findByNameContainingIgnoreCaseAndSpecialtyIgnoreCase(name, specialty);
         return filterDoctorByTime(doctors, amOrPm);
     }

@@ -25,13 +25,10 @@ public class PatientController {
     @GetMapping("/details/{token}")
     public ResponseEntity<?> getPatientDetails(@PathVariable String token) {
         try {
-            Patient patient = patientService.getPatientDetails(token);
-            if (patient == null) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body(Map.of("message", "Patient not found"));
-            }
-            return ResponseEntity.ok(patient);
-        } catch (Exception e) {
+            return patientService.getPatientDetails(token); 
+
+        } 
+        catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("message", "Error retrieving patient details: " + e.getMessage()));
         }
