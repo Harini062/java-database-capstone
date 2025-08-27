@@ -29,7 +29,7 @@ public class PrescriptionController {
         if (!tokenService.validateToken(token, "doctor")) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Invalid or expired token"));
         }
-        return prescriptionService.savePrescription(prescription);
+        return prescriptionService.savePrescription(prescription,token);
     }
 
     //Get prescription for an appointment (Only Doctor allowed)
@@ -39,6 +39,6 @@ public class PrescriptionController {
         if (!tokenService.validateToken(token, "doctor")) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Invalid or expired token"));
         }
-        return prescriptionService.getPrescription(appointmentId);
+        return prescriptionService.getPrescription(appointmentId,token);
     }
 }

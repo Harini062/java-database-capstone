@@ -116,7 +116,7 @@ public class AppointmentService {
     }
 
     // Get appointments for a doctor on a specific date
-    public ResponseEntity<Map<String, Object>> getAppointments(String pname, LocalDate date, String token) {
+    public ResponseEntity<Map<String, Object>> getAppointment(String pname, LocalDate date, String token) {
         Map<String, Object> response = new HashMap<>();
 
         try {

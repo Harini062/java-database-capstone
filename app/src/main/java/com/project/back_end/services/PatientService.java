@@ -48,7 +48,7 @@ public class PatientService {
     }
 
     // Patient Login & Token Generation
-    public ResponseEntity<Map<String, String>> validatePatient(LoginDTO login) {
+    public ResponseEntity<Map<String, String>> validatePatientLogin(LoginDTO login) {
         Map<String, String> response = new HashMap<>();
         Patient patient = patientRepository.findByEmail(login.getIdentifier());
 
@@ -64,7 +64,7 @@ public class PatientService {
     }
 
     // Get Patient Appointments (token-aware)
-    public ResponseEntity<Map<String, Object>> getPatientAppointments(Long patientId, String token) {
+    public ResponseEntity<Map<String, Object>> getPatientAppointment(Long patientId, String token) {
         Map<String, Object> body = new HashMap<>();
         try {
             Long tokenPatientId = tokenService.extractPatientId(token);
@@ -176,7 +176,7 @@ public class PatientService {
     }
 
     //  Get Patient Details
-    public ResponseEntity<Map<String, Object>> getPatientDetailsResponse(String token) {
+    public ResponseEntity<Map<String, Object>> getPatientDetails(String token) {
         Map<String, Object> body = new HashMap<>();
         try {
             Long patientId = tokenService.extractPatientId(token);

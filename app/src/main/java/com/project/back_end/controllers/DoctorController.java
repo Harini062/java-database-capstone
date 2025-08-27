@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
+import java.time.LocalDate;
 
 @RestController
 @RequestMapping("${api.path}" + "doctor")
@@ -36,7 +37,7 @@ public class DoctorController {
                     .body(Map.of("error", "Invalid or expired token"));
         }
         java.time.LocalDate localDate = java.time.LocalDate.parse(date);    
-        return ResponseEntity.ok(doctorService.getDoctorAvailability(doctorId, date));
+        return ResponseEntity.ok(doctorService.getDoctorAvailability(doctorId, localDate));
     }
 
     //Get all doctors

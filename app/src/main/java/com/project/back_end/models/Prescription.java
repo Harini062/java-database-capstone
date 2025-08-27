@@ -3,6 +3,7 @@ package com.project.back_end.models;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import jakarta.validation.constraints.*;
+import jakarta.persistence.*;
 
 @Document(collection = "prescriptions")
 public class Prescription {
@@ -28,6 +29,11 @@ public class Prescription {
     @Size(max = 200, message = "Doctor notes must not exceed 200 characters")
     private String doctorNotes;
 
+    @ManyToOne
+    @JoinColumn(name = "appointment_id",nullable=false)
+    private Appointment appointment;
+
+    
     public Prescription() {}
 
     public Prescription(String patientName, Long appointmentId, String medication, String dosage) {
@@ -79,4 +85,12 @@ public class Prescription {
     public void setDoctorNotes(String doctorNotes) {
         this.doctorNotes = doctorNotes;
     }
+
+
+    public Appointment getAppointment() { 
+        return appointment; 
+    }
+
+    public void setAppointment(Appointment appointment) { 
+        this.appointment = appointment; }
 }

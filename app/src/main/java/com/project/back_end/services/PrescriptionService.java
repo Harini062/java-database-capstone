@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -75,16 +76,16 @@ public class PrescriptionService {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
             }
 
-            Prescription prescription = prescriptionRepository.findByAppointmentId(appointmentId);
-            if (prescription == null) {
-                response.put("message", "Prescription not found for appointmentId: " + appointmentId);
+            List<Prescription> prescriptions = prescriptionRepository.findByAppointmentId(appointmentId);
+            if (prescriptions == null || prescriptions.isEmpty()) {
+                response.put("message", "Prescriptions not found for appointmentId: " + appointmentId);
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
             }
 
-            response.put("prescription", prescription);
+            response.put("prescriptions", prescriptions);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
-            response.put("message", "Error retrieving prescription: " + e.getMessage());
+            response.put("message", "Error retrieving prescriptions: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }

@@ -110,7 +110,7 @@ public class DoctorService {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
         }
     
-        String token = tokenService.generateToken(doctor., "doctor");
+        String token = tokenService.generateToken(doctor.getId(), "doctor");
         response.put("token", token);
         response.put("message", "Login successful");
         return ResponseEntity.ok(response);

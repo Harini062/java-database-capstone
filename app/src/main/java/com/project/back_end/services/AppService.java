@@ -71,7 +71,7 @@ public class AppService {
     public ResponseEntity<Map<String, Object>> filterDoctor(String name, String specialty, String time) {
         Map<String, Object> response = new HashMap<>();
         try {
-            List<Doctor> doctors = doctorService.filterDoctorsByNameSpecilityAndTime(name, specialty, time);
+            List<Doctor> doctors = doctorService.filterDoctorsByNameSpecialityAndTime(name, specialty, time);
             response.put("doctors", doctors);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
@@ -111,7 +111,7 @@ public class AppService {
     public ResponseEntity<Map<String, String>> validatePatientLogin(LoginDTO login) {
         Map<String, String> response = new HashMap<>();
         try {
-            Patient patient = patientRepository.findByEmail(login.getEmail());
+            Patient patient = patientRepository.findByEmail(login.getIdentifier());
             if (patient != null && patient.getPassword().equals(login.getPassword())) {
                 String token = tokenService.generateToken(patient.getId(), "patient");
                 response.put("token", token);
