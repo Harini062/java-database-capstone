@@ -21,6 +21,28 @@ public class PatientController {
         this.patientService = patientService;
     }
 
+    // Register a new patient
+    @PostMapping
+    public ResponseEntity<?> registerPatient(@RequestBody Patient patient) {
+        try {
+            int result = patientService.createPatient(patient);
+
+            if (result == -1) {
+                return ResponseEntity.status(HttpStatus.CONFLICT)
+                        .body(Map.of("message", "Patient already exists with this email"));
+            } else if (result == 0) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body(Map.of("message", "Error creating patient"));
+            }
+
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(Map.of("message", "Patient registered successfully"));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("message", "Error registering patient: " + e.getMessage()));
+        }
+    }
+
     //  Get patient details by token
     @GetMapping("/details/{token}")
     public ResponseEntity<?> getPatientDetails(@PathVariable String token) {

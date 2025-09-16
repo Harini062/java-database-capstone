@@ -9,6 +9,8 @@ import com.project.back_end.repo.PatientRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import java.util.*;
 
 @Service
@@ -18,6 +20,7 @@ public class AdminService {
     private final DoctorRepository doctorRepository;
     private final PatientRepository patientRepository;
     private final TokenService tokenService;
+    private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     public AdminService(AdminRepository adminRepository,DoctorRepository doctorRepository,PatientRepository patientRepository,TokenService tokenService) {
         this.adminRepository = adminRepository;
@@ -29,6 +32,7 @@ public class AdminService {
     // Create Admin
     public int createAdmin(Admin admin) {
         try {
+            admin.setPassword(passwordEncoder.encode(admin.getPassword()));
             adminRepository.save(admin);
             return 1;
         } catch (Exception ex) {
@@ -41,7 +45,7 @@ public class AdminService {
         Map<String, String> body = new HashMap<>();
         try {
             Admin admin = adminRepository.findByUsername(username);
-            if (admin == null || !password.equals(admin.getPassword())) {
+            if (admin == null || !passwordEncoder.matches(password, admin.getPassword())) {
                 body.put("message", "Invalid credentials");
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(body);
             }

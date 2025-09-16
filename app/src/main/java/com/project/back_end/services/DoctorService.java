@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -26,6 +28,8 @@ public class DoctorService {
 
     @Autowired
     private TokenService tokenService;
+
+    private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     //  Get availability of doctor by date
     public List<String> getDoctorAvailability(Long doctorId, LocalDate date) {
@@ -58,6 +62,7 @@ public class DoctorService {
             return -1; // doctor already exists
         }
         try {
+            doctor.setPassword(passwordEncoder.encode(doctor.getPassword()));
             doctorRepository.save(doctor);
             return 1; // success
         } catch (Exception e) {
@@ -67,13 +72,20 @@ public class DoctorService {
 
     // Update doctor
     public int updateDoctor(Doctor doctor) {
-        if (doctorRepository.findById(doctor.getId()).isEmpty()) {
+        Optional<Doctor> existing = doctorRepository.findById(doctor.getId());
+        if (existing.isEmpty()) {
             return -1; // not found
         }
         try {
+            // Only hash if password is not empty and different
+            if (doctor.getPassword() != null && !doctor.getPassword().isBlank() &&
+                !doctor.getPassword().equals(existing.get().getPassword())) {
+                doctor.setPassword(passwordEncoder.encode(doctor.getPassword()));
+            }
             doctorRepository.save(doctor);
             return 1;
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             return 0;
         }
     }
@@ -105,7 +117,7 @@ public class DoctorService {
         String password = login.get("password");
     
         Doctor doctor = doctorRepository.findByEmail(email);
-        if (doctor == null || !Objects.equals(doctor.getPassword(), password)) {
+        if (doctor == null || !passwordEncoder.matches(password, doctor.getPassword())) {
             response.put("message", "Invalid email or password");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
         }

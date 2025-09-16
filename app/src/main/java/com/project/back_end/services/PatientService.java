@@ -11,6 +11,9 @@ import com.project.back_end.repo.PatientRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -23,6 +26,7 @@ public class PatientService {
     private final AppointmentRepository appointmentRepository;
     private final DoctorRepository doctorRepository;
     private final TokenService tokenService;
+    private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     public PatientService(PatientRepository patientRepository,
                           AppointmentRepository appointmentRepository,
@@ -32,6 +36,7 @@ public class PatientService {
         this.appointmentRepository = appointmentRepository;
         this.doctorRepository = doctorRepository;
         this.tokenService = tokenService;
+    
     }
 
     //  Create Patient
@@ -40,6 +45,7 @@ public class PatientService {
             return -1; // already exists
         }
         try {
+            patient.setPassword(passwordEncoder.encode(patient.getPassword()));
             patientRepository.save(patient);
             return 1;
         } catch (Exception ex) {
@@ -52,7 +58,7 @@ public class PatientService {
         Map<String, String> response = new HashMap<>();
         Patient patient = patientRepository.findByEmail(login.getIdentifier());
 
-        if (patient == null || !patient.getPassword().equals(login.getPassword())) {
+        if (patient == null || !passwordEncoder.matches(login.getPassword(), patient.getPassword())) {
             response.put("message", "Invalid email or password");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
         }

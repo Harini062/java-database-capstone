@@ -37,7 +37,7 @@ public class Doctor{
     @Column(nullable=false,length=10)
     private String phone;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     private List<String> availableTimes;
 
 

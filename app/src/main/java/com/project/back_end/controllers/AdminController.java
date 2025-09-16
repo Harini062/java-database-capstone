@@ -1,5 +1,6 @@
 package com.project.back_end.controller;
 
+import com.project.back_end.models.Admin;
 import com.project.back_end.services.AdminService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,6 +18,17 @@ public class AdminController {
     @Autowired
     public AdminController(AdminService adminService) {
         this.adminService = adminService;
+    }
+    // Create new admin
+    @PostMapping
+    public ResponseEntity<?> createAdmin(@RequestBody Admin admin) {
+        int created = adminService.createAdmin(admin);
+        if (created == 1) {
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(Map.of("message", "Admin created successfully"));
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(Map.of("error", "Failed to create admin"));
     }
 
 
