@@ -53,7 +53,7 @@ public class AppService {
     public ResponseEntity<Map<String, String>> validateAdmin(Admin receivedAdmin) {
         Map<String, String> response = new HashMap<>();
         try {
-            Admin admin = adminRepository.findByUsername(receivedAdmin.getUsername());
+            Admin admin = adminRepository.findByEmail(receivedAdmin.getEmail());
             if (admin != null && admin.getPassword().equals(receivedAdmin.getPassword())) {
                 String token = tokenService.generateToken(admin.getId(), "admin");
                 response.put("token", token);

@@ -41,10 +41,10 @@ public class AdminService {
     }
 
     // Admin Login -> issue JWT
-    public ResponseEntity<Map<String, String>> login(String username, String password) {
+    public ResponseEntity<Map<String, String>> login(String email, String password) {
         Map<String, String> body = new HashMap<>();
         try {
-            Admin admin = adminRepository.findByUsername(username);
+            Admin admin = adminRepository.findByEmail(email);
             if (admin == null || !passwordEncoder.matches(password, admin.getPassword())) {
                 body.put("message", "Invalid credentials");
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(body);
@@ -68,8 +68,8 @@ public class AdminService {
 
     // Get Admin details from token
     public Admin getAdminDetails(String token) {
-        String username = tokenService.extractIdentifier(token);
-        return adminRepository.findByUsername(username);
+        String email = tokenService.extractIdentifier(token);
+        return adminRepository.findByEmail(email);
     }
 
 
