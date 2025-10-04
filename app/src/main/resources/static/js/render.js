@@ -1,28 +1,43 @@
 // render.js
+import { openModal } from "./components/modals.js";
 
-function selectRole(role) {
+export function selectRole(role) {
   setRole(role);
   const token = localStorage.getItem('token');
-  if (role === "admin") {
-    if (token) {
-      window.location.href = `/adminDashboard/${token}`;
-    }
-  } if (role === "patient") {
-    window.location.href = "/pages/patientDashboard.html";
-  } else if (role === "doctor") {
-    if (token) {
-      window.location.href = `/doctorDashboard/${token}`;
-    } else if (role === "loggedPatient") {
-      window.location.href = "/pages/loggedPatientDashboard.html";
-    }
+
+  switch(role) {
+    case "admin":
+      if (token) {
+        window.location.href = `/adminDashboard/${token}`;
+      } else {
+        openModal('adminLogin');
+      }
+      break;
+
+    case "doctor":
+      if (token) {
+        window.location.href = `/doctorDashboard/${token}`;
+      } else {
+        openModal('doctorLogin');
+      }
+      break;
+
+    case "patient":
+      window.location.href = "/pages/patientDashboard.html";
+      break;
+
+    case "loggedPatient":
+      if (token) {
+        window.location.href = "/pages/loggedPatientDashboard.html";
+      } else {
+        openModal('patientLogin');
+      }
+      break;
+
+    default:
+      console.error("Unknown role:", role);
   }
 }
-
-
-function renderContent() {
-  const role = getRole();
-  if (!role) {
-    window.location.href = "/"; // if no role, send to role selection page
-    return;
-  }
-}
+document.getElementById('adminBtn').addEventListener('click', () => selectRole('admin'));
+document.getElementById('doctorBtn').addEventListener('click', () => selectRole('doctor'));
+document.getElementById('patientBtn').addEventListener('click', () => selectRole('patient'));

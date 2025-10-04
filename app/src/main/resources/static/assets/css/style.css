@@ -165,7 +165,7 @@
   .modal {
     display: none;
     position: fixed;
-    z-index: 999;
+    z-index: 9999;
     padding-top: 60px;
     left: 0;
     top: 0;
@@ -181,6 +181,7 @@
     border-radius: 10px;
     width: 400px;
     position: relative;
+    
   }
   
   .modal-content h2{
@@ -379,4 +380,13 @@
   margin-right: 0.5rem;
   accent-color: #015c5db8; 
 }
+
+
+body.modal-open #content, 
+body.modal-open main, 
+body.modal-open .wrapper {
+    filter: blur(5px);
+    pointer-events: none; /* prevent clicking the background */
+}
+
 

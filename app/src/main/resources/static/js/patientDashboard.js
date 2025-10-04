@@ -1,7 +1,13 @@
 import { getDoctors, filterDoctors } from './services/doctorServices.js';
 import { openModal } from './components/modals.js';
+import {renderHeader } from './components/header.js';
 import { createDoctorCard } from './components/doctorCard.js';
 import { patientSignup, patientLogin } from './services/patientServices.js';
+
+document.addEventListener("DOMContentLoaded", () => {
+  renderHeader();
+});
+
 
 document.addEventListener("DOMContentLoaded", () => {
   loadDoctorCards();

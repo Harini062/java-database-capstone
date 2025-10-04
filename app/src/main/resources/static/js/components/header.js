@@ -1,4 +1,5 @@
-function renderHeader() {
+import { openModal } from "./modals.js";
+export function renderHeader() {
   const headerDiv = document.getElementById("header");
 
   
@@ -132,5 +133,4 @@ function logoutPatient() {
   window.location.href = "/pages/patientDashboard.html";
 }
 
- 
-document.addEventListener("DOMContentLoaded", renderHeader);
+

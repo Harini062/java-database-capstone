@@ -1,6 +1,10 @@
+import {renderHeader } from '../components/header.js';
 import { openModal } from "../components/modals.js";
 import { API_BASE_URL } from "../config/config.js";
-import { selectRole } from "../render.js"; 
+import {selectRole } from "../render.js"
+document.addEventListener("DOMContentLoaded", () => {
+    renderHeader();
+  });
 
 const ADMIN_API = API_BASE_URL + '/admin';
 const DOCTOR_API = API_BASE_URL + '/doctor/login';

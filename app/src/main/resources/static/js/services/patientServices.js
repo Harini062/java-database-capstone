@@ -4,14 +4,14 @@ const PATIENT_API = API_BASE_URL + '/patient';
 
 export async function patientSignup(data) {
     try {
-        const repsonse = await fetch(PATIENT_API, {
+        const response = await fetch(PATIENT_API, {
             method : "POST",
             headers : {"Content-Type": "application/json" },
             body: JSON.stringify(data)
         });
 
-        if(Response.ok){
-            const result = await repsonse.json();
+        if(response.ok){
+            const result = await response.json();
             return { success : true, message : result.message || "Signup successful" };
         }
         else {

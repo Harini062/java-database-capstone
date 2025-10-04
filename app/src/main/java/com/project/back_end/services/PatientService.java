@@ -56,7 +56,9 @@ public class PatientService {
     // Patient Login & Token Generation
     public ResponseEntity<Map<String, String>> validatePatientLogin(LoginDTO login) {
         Map<String, String> response = new HashMap<>();
+
         Patient patient = patientRepository.findByEmail(login.getIdentifier());
+
 
         if (patient == null || !passwordEncoder.matches(login.getPassword(), patient.getPassword())) {
             response.put("message", "Invalid email or password");

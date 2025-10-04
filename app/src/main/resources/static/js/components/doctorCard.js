@@ -1,9 +1,8 @@
-import { deleteDoctor } from "./services/doctorServices.js";
-import { getPatientData } from "./services/patientServices.js";
-import { showBookingOverlay } from "./loggedPatient.js";
+import { deleteDoctor } from "../services/doctorServices.js";
+import { getPatientData } from "../services/patientServices.js";
+import { showBookingOverlay } from "../loggedPatient.js";
 
 export function createDoctorCard(doctor) {
-  
   const card = document.createElement("div");
   card.classList.add("doctor-card");
   
@@ -15,21 +14,21 @@ export function createDoctorCard(doctor) {
   const name = document.createElement("h3");
   name.textContent = doctor.name;
 
-  const specialization = document.createElement("p");
-  specialization.textContent = `Specialization: ${doctor.specialization}`;
+  const specialty = document.createElement("p");
+  specialty.textContent = `Specialization: ${doctor.specialty|| "N/A"}`;
 
   const email = document.createElement("p");
   email.textContent = `Email: ${doctor.email}`;
 
-  const availability = document.createElement("p");
-  availability.textContent = `Available: ${
-    Array.isArray(doctor.availability) ? doctor.availability.join(", ") : doctor.availability
+  const availableTimes = document.createElement("p");
+  availableTimes.textContent = `Available: ${
+    Array.isArray(doctor.availableTimes) ? doctor.availableTimes.join(", ") : "N/A"
   }`;
 
   infoDiv.appendChild(name);
-  infoDiv.appendChild(specialization);
+  infoDiv.appendChild(specialty);
   infoDiv.appendChild(email);
-  infoDiv.appendChild(availability);
+  infoDiv.appendChild(availableTimes);
 
   const actionsDiv = document.createElement("div");
   actionsDiv.classList.add("card-actions");
