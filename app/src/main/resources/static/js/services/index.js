@@ -31,7 +31,7 @@ window.adminLoginHandler = async function () {
         const username = document.getElementById('adminUsername').value;
         const password = document.getElementById('adminPassword').value;
 
-        const asmin = { username,password};
+        const admin = { username,password};
 
         const response = await fetch(ADMIN_API, {
             method : 'POST',

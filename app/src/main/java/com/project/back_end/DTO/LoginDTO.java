@@ -2,29 +2,29 @@ package com.project.back_end.DTO;
 
 public class LoginDTO {
 
-    private String identifier; // email (Doctor/Patient) or username (Admin)
+    private String email;
     private String password;   
 
     
     public LoginDTO() {
     }
 
-    public LoginDTO(String identifier, String password) {
-        this.identifier = identifier;
+    public LoginDTO(String email, String password) {
+        this.email = email;
         this.password = password;
     }
 
     // Getters & Setters
-    public String getIdentifier() {
-        return identifier;
+    public String getEmail() {
+        return email;
     }
 
     public String getPassword() {
         return password;
     }
 
-    public void setIdentifier(String identifier) {
-        this.identifier = identifier;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public void setPassword(String password) {

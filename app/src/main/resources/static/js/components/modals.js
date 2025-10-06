@@ -7,7 +7,7 @@ export function openModal(type) {
         modalContent = `
           <h2>Add Doctor</h2>
           <input type="text" id="doctorName" placeholder="Doctor Name" class="input-field">
-          <select id="specialization" class="input-field select-dropdown">
+          <select id="doctorSpecialty" class="input-field select-dropdown">
             <option value="">Specialization</option>
             <option value="cardiologist">Cardiologist</option>
             <option value="dermatologist">Dermatologist</option>
@@ -26,7 +26,7 @@ export function openModal(type) {
           </select>
           <input type="email" id="doctorEmail" placeholder="Email" class="input-field">
           <input type="password" id="doctorPassword" placeholder="Password" class="input-field">
-          <input type="text" id="doctorPhone" placeholder="Mobile No." class="input-field">
+          <input type="text" id="doctorMobile" placeholder="Mobile No." class="input-field">
           <div class="availability-container">
             <label class="availabilityLabel">Select Availability:</label>
             <div class="checkbox-group">
@@ -64,8 +64,8 @@ export function openModal(type) {
       case 'adminLogin':
         modalContent = `
           <h2>Admin Login</h2>
-          <input type="text" id="username" placeholder="Username" class="input-field">
-          <input type="password" id="password" placeholder="Password" class="input-field">
+          <input type="text" id="adminUsername" placeholder="Username" class="input-field">
+          <input type="password" id="adminPassword" placeholder="Password" class="input-field">
           <button class="dashboard-btn" id="adminLoginBtn">Login</button>
         `;
         break;
@@ -73,8 +73,8 @@ export function openModal(type) {
       case 'doctorLogin':
         modalContent = `
           <h2>Doctor Login</h2>
-          <input type="text" id="email" placeholder="Email" class="input-field">
-          <input type="password" id="password" placeholder="Password" class="input-field">
+          <input type="text" id="doctorEmail" placeholder="Email" class="input-field">
+          <input type="password" id="doctorPassword" placeholder="Password" class="input-field">
           <button class="dashboard-btn" id="doctorLoginBtn">Login</button>
         `;
         break;

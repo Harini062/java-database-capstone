@@ -1,12 +1,11 @@
+// doctorCard.js
 import { deleteDoctor } from "../services/doctorServices.js";
 import { getPatientData } from "../services/patientServices.js";
-import { showBookingOverlay } from "../loggedPatient.js";
+import { showBookingOverlay } from "../bookingOverlay.js"; 
 
 export function createDoctorCard(doctor) {
   const card = document.createElement("div");
   card.classList.add("doctor-card");
-  
-  const role = localStorage.getItem("userRole");
 
   const infoDiv = document.createElement("div");
   infoDiv.classList.add("doctor-info");
@@ -15,7 +14,7 @@ export function createDoctorCard(doctor) {
   name.textContent = doctor.name;
 
   const specialty = document.createElement("p");
-  specialty.textContent = `Specialization: ${doctor.specialty|| "N/A"}`;
+  specialty.textContent = `Specialization: ${doctor.specialty || "N/A"}`;
 
   const email = document.createElement("p");
   email.textContent = `Email: ${doctor.email}`;
@@ -33,69 +32,58 @@ export function createDoctorCard(doctor) {
   const actionsDiv = document.createElement("div");
   actionsDiv.classList.add("card-actions");
 
+  // BOOK NOW button (always visible for patients)
+  const bookNow = document.createElement("button");
+  bookNow.textContent = "Book Now";
+  bookNow.classList.add("btn", "btn-primary");
+
+  bookNow.addEventListener("click", async (e) => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("Please login first to book an appointment.");
+      return;
+    }
+
+    try {
+      const patientData = await getPatientData(token);
+      if (!patientData) {
+        alert("Session expired. Please login again.");
+        return;
+      }
+      showBookingOverlay(e, doctor, patientData);
+    } catch (error) {
+      console.error("Error fetching patient data:", error);
+      alert("Unable to book appointment at this time.");
+    }
+  });
+
+  actionsDiv.appendChild(bookNow);
+
+  // Admin delete button
+  const role = localStorage.getItem("userRole");
   if (role === "admin") {
     const removeBtn = document.createElement("button");
     removeBtn.textContent = "Delete";
     removeBtn.classList.add("btn", "btn-danger");
 
     removeBtn.addEventListener("click", async () => {
-      const confirmDelete = confirm(`Are you sure you want to delete Dr. ${doctor.name}?`);
-      if (!confirmDelete) return;
-
+      if (!confirm(`Are you sure you want to delete Dr. ${doctor.name}?`)) return;
       try {
         const token = localStorage.getItem("token");
         const success = await deleteDoctor(doctor.id, token);
         if (success) {
           alert(`Doctor ${doctor.name} removed successfully.`);
-          card.remove(); 
+          card.remove();
         } else {
-          alert("Error: Could not delete doctor.");
+          alert("Failed to delete doctor.");
         }
-      } catch (error) {
-        console.error("Error deleting doctor:", error);
-        alert("An unexpected error occurred.");
+      } catch (err) {
+        console.error(err);
+        alert("Error deleting doctor.");
       }
     });
 
     actionsDiv.appendChild(removeBtn);
-  }
-
-  
-  else if (role === "patient") {
-    const bookNow = document.createElement("button");
-    bookNow.textContent = "Book Now";
-    bookNow.classList.add("btn", "btn-primary");
-
-    bookNow.addEventListener("click", () => {
-      alert("Please login first to book an appointment.");
-    });
-
-    actionsDiv.appendChild(bookNow);
-  }
-
-  
-  else if (role === "loggedPatient") {
-    const bookNow = document.createElement("button");
-    bookNow.textContent = "Book Now";
-    bookNow.classList.add("btn", "btn-primary");
-
-    bookNow.addEventListener("click", async (e) => {
-      try {
-        const token = localStorage.getItem("token");
-        if (!token) {
-          alert("Session expired. Please log in again.");
-          return;
-        }
-
-        const patientData = await getPatientData(token);
-        showBookingOverlay(e, doctor, patientData);
-      } catch (error) {
-        console.error("Error booking appointment:", error);
-        alert("Unable to book appointment at this time.");
-      }
-    });
-
-    actionsDiv.appendChild(bookNow);
   }
 
   card.appendChild(infoDiv);

@@ -1,45 +1,44 @@
+// PatientDashboard.js
 import { getDoctors, filterDoctors } from './services/doctorServices.js';
-import { openModal } from './components/modals.js';
-import {renderHeader } from './components/header.js';
 import { createDoctorCard } from './components/doctorCard.js';
-import { patientSignup, patientLogin } from './services/patientServices.js';
+import { renderHeader } from './components/header.js';
+import { openModal } from './components/modals.js';
+import { patientSignup, patientLogin } from "./services/patientServices.js";
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
+  // Render header first
   renderHeader();
-});
 
+  // Load doctors initially
+  await loadDoctorCards();
 
-document.addEventListener("DOMContentLoaded", () => {
-  loadDoctorCards();
-
-  const signupBtn = document.getElementById("patientSignup");
-  if (signupBtn) signupBtn.addEventListener("click", () => openModal("patientSignup"));
-
-  const loginBtn = document.getElementById("patientLogin");
-  if (loginBtn) loginBtn.addEventListener("click", () => openModal("patientLogin"));
-
+  // Filter/search event listeners
   const searchBar = document.getElementById("searchBar");
-  if (searchBar) searchBar.addEventListener("input", filterDoctorsOnChange);
-
   const filterTime = document.getElementById("filterTime");
-  if (filterTime) filterTime.addEventListener("change", filterDoctorsOnChange);
-
   const filterSpecialty = document.getElementById("filterSpecialty");
-  if (filterSpecialty) filterSpecialty.addEventListener("change", filterDoctorsOnChange);
-});
 
+  if (searchBar) searchBar.addEventListener("input", filterDoctorsOnChange);
+  if (filterTime) filterTime.addEventListener("change", filterDoctorsOnChange);
+  if (filterSpecialty) filterSpecialty.addEventListener("change", filterDoctorsOnChange);
+
+  // Header login/signup buttons
+  const loginBtn = document.getElementById("patientLogin");
+  const signupBtn = document.getElementById("patientSignup");
+
+  if (loginBtn) loginBtn.addEventListener("click", () => openModal("patientLogin"));
+  if (signupBtn) signupBtn.addEventListener("click", () => openModal("patientSignup"));
+});
 
 async function loadDoctorCards() {
   try {
     const doctors = await getDoctors();
     renderDoctors(doctors);
-  } 
-  catch (error) {
-    console.error("Failed to load doctors:", error);
-    document.getElementById("content").innerHTML = "<p>Error loading doctors.</p>";
+  } catch (err) {
+    console.error("Failed to load doctors:", err);
+    const contentDiv = document.getElementById("content");
+    if (contentDiv) contentDiv.innerHTML = "<p>Error loading doctors.</p>";
   }
 }
-
 
 async function filterDoctorsOnChange() {
   const name = document.getElementById("searchBar")?.value.trim() || null;
@@ -47,56 +46,53 @@ async function filterDoctorsOnChange() {
   const specialty = document.getElementById("filterSpecialty")?.value || null;
 
   try {
-    const doctors = await filterDoctors(name, time, specialty);
-    if (doctors && doctors.length > 0) {
-      renderDoctors(doctors);
-    } 
+    const response = await filterDoctors(name, time, specialty);
+    const doctors = response.doctors || [];
+    if (doctors.length > 0) renderDoctors(doctors);
     else {
-      document.getElementById("content").innerHTML = "<p>No doctors found with the given filters.</p>";
+      const contentDiv = document.getElementById("content");
+      if (contentDiv) contentDiv.innerHTML = "<p>No doctors found with the given filters.</p>";
     }
-  }
-   catch (error) {
-    console.error("Failed to filter doctors:", error);
+  } catch (err) {
+    console.error("Error filtering doctors:", err);
     alert("An error occurred while filtering doctors.");
   }
 }
 
-
 function renderDoctors(doctors) {
   const contentDiv = document.getElementById("content");
+  if (!contentDiv) return;
+
   contentDiv.innerHTML = "";
-  doctors.forEach(doctor => {
+  doctors.forEach((doctor) => {
     const card = createDoctorCard(doctor);
     contentDiv.appendChild(card);
   });
 }
 
 
+// SIGNUP
 window.signupPatient = async function () {
   try {
     const name = document.getElementById("signupName").value;
     const email = document.getElementById("signupEmail").value;
     const password = document.getElementById("signupPassword").value;
-    const phone = document.getElementById("signupPhone").value;
-    const address = document.getElementById("signupAddress").value;
 
-    const { success, message } = await patientSignup({ name, email, password, phone, address });
-    if (success) {
-      alert(message);
-      document.getElementById("patientSignup")?.classList.remove("open"); // close modal
-      window.location.reload();
-    } 
-    else {
-      alert(message);
+    const response = await patientSignup({ name, email, password });
+    if (response.ok) {
+      alert("Signup successful! Please log in.");
+      document.getElementById("signupForm").reset();
+    } else {
+      alert("Signup failed. Try again.");
     }
-  } 
-  catch (error) {
-    console.error("Signup failed:", error);
-    alert("An error occurred while signing up.");
+  } catch (error) {
+    console.error("Signup error:", error);
+    alert("Failed to sign up.");
   }
 };
 
 
+// LOGIN
 window.loginPatient = async function () {
   try {
     const email = document.getElementById("loginEmail").value;
@@ -105,15 +101,17 @@ window.loginPatient = async function () {
     const response = await patientLogin({ email, password });
     if (response.ok) {
       const result = await response.json();
-      localStorage.setItem('token', result.token);
-      alert(" Login successful!");
-      window.location.href = '/pages/loggedPatientDashboard.html';
+
+      // store token + role
+      localStorage.setItem("token", result.token);
+      localStorage.setItem("userRole", "loggedPatient"); 
+
+      alert("Login successful!");
+      window.location.href = "/pages/loggedPatientDashboard.html";
+    } else {
+      alert("Invalid credentials!");
     }
-    else {
-      alert('Invalid credentials!');
-    }
-  } 
-  catch (error) {
+  } catch (error) {
     console.error("Login error:", error);
     alert("Failed to login.");
   }

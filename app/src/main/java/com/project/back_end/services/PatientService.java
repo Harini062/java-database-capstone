@@ -57,7 +57,7 @@ public class PatientService {
     public ResponseEntity<Map<String, String>> validatePatientLogin(LoginDTO login) {
         Map<String, String> response = new HashMap<>();
 
-        Patient patient = patientRepository.findByEmail(login.getIdentifier());
+        Patient patient = patientRepository.findByEmail(login.getEmail());
 
 
         if (patient == null || !passwordEncoder.matches(login.getPassword(), patient.getPassword())) {

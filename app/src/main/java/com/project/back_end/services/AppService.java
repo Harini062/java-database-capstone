@@ -111,7 +111,7 @@ public class AppService {
     public ResponseEntity<Map<String, String>> validatePatientLogin(LoginDTO login) {
         Map<String, String> response = new HashMap<>();
         try {
-            Patient patient = patientRepository.findByEmail(login.getIdentifier());
+            Patient patient = patientRepository.findByEmail(login.getEmail());
             if (patient != null && patient.getPassword().equals(login.getPassword())) {
                 String token = tokenService.generateToken(patient.getId(), "patient");
                 response.put("token", token);

@@ -1,8 +1,8 @@
 import { openModal } from "./modals.js";
+
 export function renderHeader() {
   const headerDiv = document.getElementById("header");
 
-  
   if (window.location.pathname.endsWith("/")) {
     localStorage.removeItem("userRole");
     localStorage.removeItem("token");
@@ -17,7 +17,6 @@ export function renderHeader() {
     return;
   }
 
-  
   const role = localStorage.getItem("userRole");
   const token = localStorage.getItem("token");
 
@@ -62,75 +61,49 @@ export function renderHeader() {
   `;
 
   headerDiv.innerHTML = headerContent;
-
   attachHeaderButtonListeners();
 }
 
-
 function attachHeaderButtonListeners() {
-  
   const addDocBtn = document.getElementById("addDocBtn");
-  if (addDocBtn) {
-    addDocBtn.addEventListener("click", () => openModal("addDoctor"));
-  }
+  if (addDocBtn) addDocBtn.addEventListener("click", () => openModal("addDoctor"));
 
-  
   const loginBtn = document.getElementById("patientLogin");
-  if (loginBtn) {
-    loginBtn.addEventListener("click", () => openModal("patientLogin"));
-  }
+  if (loginBtn) loginBtn.addEventListener("click", () => openModal("patientLogin"));
 
   const signupBtn = document.getElementById("patientSignup");
-  if (signupBtn) {
-    signupBtn.addEventListener("click", () => openModal("patientSignup"));
-  }
+  if (signupBtn) signupBtn.addEventListener("click", () => openModal("patientSignup"));
 
-    const doctorHomeBtn = document.getElementById("doctorHomeBtn");
-  if (doctorHomeBtn) {
-    doctorHomeBtn.addEventListener("click", () => {
-      window.location.href = "/pages/doctorDashboard.html";
-    });
-  }
+  const doctorHomeBtn = document.getElementById("doctorHomeBtn");
+  if (doctorHomeBtn) doctorHomeBtn.addEventListener("click", () => {
+    window.location.href = "/pages/doctorDashboard.html";
+  });
 
-  // LoggedPatient navigation
   const homeBtn = document.getElementById("home");
-  if (homeBtn) {
-    homeBtn.addEventListener("click", () => {
-      window.location.href = "/pages/loggedPatientDashboard.html";
-    });
-  }
+  if (homeBtn) homeBtn.addEventListener("click", () => {
+    window.location.href = "/pages/loggedPatientDashboard.html";
+  });
 
   const patientAppointments = document.getElementById("patientAppointments");
-  if (patientAppointments) {
-    patientAppointments.addEventListener("click", () => {
-      window.location.href = "/pages/patientAppointments.html";
-    });
-  }
+  if (patientAppointments) patientAppointments.addEventListener("click", () => {
+    window.location.href = "/pages/patientAppointments.html";
+  });
 
-  // Logout buttons
   const logoutBtn = document.getElementById("logoutBtn");
-  if (logoutBtn) {
-    logoutBtn.addEventListener("click", logout);
-  }
+  if (logoutBtn) logoutBtn.addEventListener("click", logout);
 
   const logoutPatientBtn = document.getElementById("logoutPatientBtn");
-  if (logoutPatientBtn) {
-    logoutPatientBtn.addEventListener("click", logoutPatient);
-  }
+  if (logoutPatientBtn) logoutPatientBtn.addEventListener("click", logoutPatient);
 }
 
- 
 function logout() {
   localStorage.removeItem("userRole");
   localStorage.removeItem("token");
   window.location.href = "/";
 }
 
- 
 function logoutPatient() {
   localStorage.removeItem("token");
   localStorage.setItem("userRole", "patient");
   window.location.href = "/pages/patientDashboard.html";
 }
-
-
