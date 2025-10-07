@@ -1,11 +1,15 @@
-import { openModal, closeModal } from "./components/modals.js";
+import { openModal,closeModal } from "./components/modals.js";
 import { getDoctors, filterDoctors, saveDoctor } from "./services/doctorServices.js";
 import { createDoctorCard } from "./components/doctorCard.js";
 
 
-document.getElementById("addDocBtn").addEventListener("click", () => {
-  openModal("addDoctor");
-});
+document.addEventListener("DOMContentLoaded", () => {
+    const addDocBtn = document.getElementById("addDocBtn");
+    if(addDocBtn) {
+        addEventListener("click", () => openModal("addDoctor"));
+    }
+  });
+  
 
 document.addEventListener("DOMContentLoaded", loadDoctorCards);
 
@@ -62,9 +66,13 @@ async function filterDoctorsOnChange() {
     alert("Error applying filters. Please try again.");
   }
 }
+document.addEventListener("DOMContentLoaded", () => {
+    const addDocForm = document.getElementById("addDocForm");
+    if(addDocForm) {
+        addEventListener("submit", adminAddDoctor);
+    }
+  });
 
-
-document.getElementById("addDoctorForm").addEventListener("submit", adminAddDoctor);
 
 async function adminAddDoctor(event) {
   event.preventDefault();

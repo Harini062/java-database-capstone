@@ -23,8 +23,8 @@
                     <div class="filters">
                         <select id="filterTime">
                             <option value="">Sort by Time</option>
-                            <option value="asc">Earliest</option>
-                            <option value="desc">Latest</option>
+                            <option value="AM">AM</option>
+                            <option value="PM">PM</option>
                         </select>
                         <select id="filterSpecialty">
                         <option value="">Filter by Specialty</option>
@@ -43,6 +43,7 @@
                         <option value="Gastroenterologist">Gastroenterologist</option>
                         <option value="General">General Physician</option>
                         </select>
+                        <button id="addDocBtn">Add Doctor</button>
                     </div>
 
                 <div id="content"></div>
@@ -53,8 +54,8 @@
         <span id="closeModal" class="close">&times;</span>
         <div id="modal-body"></div>
     </div>
-    <script type="module" th:src="@{/js/services/adminDashboard.js}" defer></script>
-    <script type="module" th:src="@{/js/components/doctorCard.js}" defer></script>
+    <script type="module" th:src="@{/js/adminDashboard.js}" defer></script>
+   <!-- <script type="module" th:src="@{/js/components/doctorCard.js}" defer></script> -->
 </body>
 </html>
 

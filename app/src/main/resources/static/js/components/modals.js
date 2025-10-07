@@ -108,4 +108,10 @@ export function openModal(type) {
     if (type === "adminLogin") document.getElementById("adminLoginBtn")?.addEventListener("click", adminLoginHandler);
     if (type === "doctorLogin") document.getElementById("doctorLoginBtn")?.addEventListener("click", doctorLoginHandler);
   }
+
+export function closeModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) modal.style.display = "none";
+}
+
   

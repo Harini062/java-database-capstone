@@ -13,7 +13,7 @@
   <script th:src="@{/js/util.js}" defer></script>
   <script type="module" th:src="@{/js/components/header.js}" defer></script>
   <script th:src="@{/js/components/footer.js}" defer></script>
-  <script th:src="@{/js/components/patientRows.js}" defer></script>
+  <script type="module" th:src="@{/js/components/patientRows.js}" defer></script>
 </head>
 <body>
   <div class="container">
@@ -21,10 +21,10 @@
       <div id="header"></div>
 
       <main class="main-content">
-        <input type="text" id="searchBar" placeholder="Search Patient" />
-        <div class="filters">
-          <button id="todayAppointments">Today’s Appointments</button>
-          <input type="date" id="dateFilter" />
+        <input type="text" id="searchBar" class="search-bar" placeholder="Search Patient" />
+        <div class="filter-bar">
+          <button id="todayButton" class="today-btn">Today’s Appointments</button>
+          <input type="date" id="datePicker"class="date-picker" />
         </div>
         <table id="patientTable">
           <thead>
@@ -36,7 +36,7 @@
               <th>Prescription</th>
             </tr>
           </thead>
-          <tbody></tbody>
+          <tbody id="patientTableBo"></tbody>
         </table>
       </main>
 
@@ -44,6 +44,6 @@
     </div>
   </div>
 
-  <script type="module" th:src="@{/js/services/doctorDashboard.js}" defer></script>
+  <script type="module" th:src="@{/js/doctorDashboard.js}" defer></script>
 </body>
 </html>
