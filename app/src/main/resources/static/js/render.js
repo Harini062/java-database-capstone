@@ -38,6 +38,14 @@ export function selectRole(role) {
       console.error("Unknown role:", role);
   }
 }
-document.getElementById('adminBtn').addEventListener('click', () => selectRole('admin'));
-document.getElementById('doctorBtn').addEventListener('click', () => selectRole('doctor'));
-document.getElementById('patientBtn').addEventListener('click', () => selectRole('patient'));
+
+document.addEventListener("DOMContentLoaded", () => {
+    const adminBtn = document.getElementById('adminBtn');
+    const doctorBtn = document.getElementById('doctorBtn');
+    const patientBtn = document.getElementById('patientBtn');
+  
+    if (adminBtn) adminBtn.addEventListener('click', () => selectRole('admin'));
+    if (doctorBtn) doctorBtn.addEventListener('click', () => selectRole('doctor'));
+    if (patientBtn) patientBtn.addEventListener('click', () => selectRole('patient'));
+  });
+  

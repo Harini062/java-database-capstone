@@ -34,7 +34,11 @@ export function openModal(type) {
               <label><input type="checkbox" name="availability" value="09:00-10:00"> 9:00 AM - 10:00 AM</label>
               <label><input type="checkbox" name="availability" value="10:00-11:00"> 10:00 AM - 11:00 AM</label>
               <label><input type="checkbox" name="availability" value="11:00-12:00"> 11:00 AM - 12:00 PM</label>
-              <label><input type="checkbox" name="availability" value="12:00-13:00"> 12:00 PM - 1:00 PM</label>
+              <label><input type="checkbox" name="availability" value="12:00-13:00"> 12:00 PM - 01:00 PM</label>
+              <label><input type="checkbox" name="availability" value="13:00-14:00"> 01:00 PM - 02:00 PM</label>
+              <label><input type="checkbox" name="availability" value="14:00-15:00"> 02:00 PM - 03:00 PM</label>
+              <label><input type="checkbox" name="availability" value="15:00-16:00"> 03:00 PM - 04:00 PM</label>
+              <label><input type="checkbox" name="availability" value="16:00-17:00"> 04:00 PM - 05:00 PM</label>
             </div>
           </div>
           <button type="submit" class="dashboard-btn" id="saveDoctorBtn">Save</button>

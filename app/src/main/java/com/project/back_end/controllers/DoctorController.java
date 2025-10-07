@@ -88,13 +88,18 @@ public class DoctorController {
         return ResponseEntity.ok(Map.of("message", "Doctor deleted successfully."));
     }
     
-    //Filter doctors by name, time, and speciality
-    @GetMapping("/filter/{name}/{time}/{speciality}")
+    //Filter doctors by name, time, and specialty
+    @GetMapping("/filter")
     public ResponseEntity<?> filterDoctors(
-            @PathVariable String name,
-            @PathVariable String time,
-            @PathVariable String speciality) {
+        @RequestParam(required = false) String name,
+        @RequestParam(required = false) String time,
+        @RequestParam(required = false) String specialty) {
 
-        return ResponseEntity.ok(doctorService.filterDoctor(name, time, speciality));
+      return ResponseEntity.ok(doctorService.filterDoctor(
+        name != null ? name : "",
+        time != null ? time : "",
+        specialty != null ? specialty : ""
+      ));
     }
+
 }

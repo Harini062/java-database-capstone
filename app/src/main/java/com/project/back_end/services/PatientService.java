@@ -54,8 +54,8 @@ public class PatientService {
     }
 
     // Patient Login & Token Generation
-    public ResponseEntity<Map<String, String>> validatePatientLogin(LoginDTO login) {
-        Map<String, String> response = new HashMap<>();
+    public ResponseEntity<Map<String, Object>> validatePatientLogin(LoginDTO login) {
+        Map<String, Object> response = new HashMap<>();
 
         Patient patient = patientRepository.findByEmail(login.getEmail());
 
@@ -68,6 +68,7 @@ public class PatientService {
         String token = tokenService.generateToken(patient.getId(), "patient");
         response.put("token", token);
         response.put("message", "Login successful");
+        response.put("patient", patient); 
         return ResponseEntity.ok(response);
     }
 

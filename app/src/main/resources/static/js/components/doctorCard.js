@@ -37,18 +37,17 @@ export function createDoctorCard(doctor) {
   const role = localStorage.getItem("userRole");
 
   // Book Now only for patients
-  if (role === "patient") {
+  if (role === "patient" || role === "loggedPatient") {
     const bookNow = document.createElement("button");
     bookNow.textContent = "Book Now";
-    bookNow.classList.add("btn", "btn-primary");
+    bookNow.classList.add("btn", "btn-primary","book-now");
 
     bookNow.addEventListener("click", async (e) => {
       const token = localStorage.getItem("token");
-      if (!token) return alert("Please login first.");
+      if (!token) return alert("Please login first to book an appointment.");
       try {
         const patientData = await getPatientData(token);
         if (!patientData) return alert("Session expired. Please login again.");
-        showBookingOverlay(e, doctor, patientData);
       } catch (err) {
         console.error(err);
         alert("Unable to book appointment.");

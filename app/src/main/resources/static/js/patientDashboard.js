@@ -9,30 +9,33 @@ document.addEventListener("DOMContentLoaded", async () => {
   // Render header first
   renderHeader();
 
+  // Wait until header is in DOM before attaching event listeners
+  setTimeout(() => {
+    const searchBar = document.getElementById("searchBar");
+    const filterTime = document.getElementById("filterTime");
+    const filterSpecialty = document.getElementById("filterSpecialty");
+
+    if (searchBar) searchBar.addEventListener("input", filterDoctorsOnChange);
+    if (filterTime) filterTime.addEventListener("change", filterDoctorsOnChange);
+    if (filterSpecialty) filterSpecialty.addEventListener("change", filterDoctorsOnChange);
+
+    // Header login/signup buttons
+    const loginBtn = document.getElementById("patientLogin");
+    const signupBtn = document.getElementById("patientSignup");
+
+    if (loginBtn) loginBtn.addEventListener("click", () => openModal("patientLogin"));
+    if (signupBtn) signupBtn.addEventListener("click", () => openModal("patientSignup"));
+  }, 50); // small delay to ensure DOM exists
+
   // Load doctors initially
   await loadDoctorCards();
-
-  // Filter/search event listeners
-  const searchBar = document.getElementById("searchBar");
-  const filterTime = document.getElementById("filterTime");
-  const filterSpecialty = document.getElementById("filterSpecialty");
-
-  if (searchBar) searchBar.addEventListener("input", filterDoctorsOnChange);
-  if (filterTime) filterTime.addEventListener("change", filterDoctorsOnChange);
-  if (filterSpecialty) filterSpecialty.addEventListener("change", filterDoctorsOnChange);
-
-  // Header login/signup buttons
-  const loginBtn = document.getElementById("patientLogin");
-  const signupBtn = document.getElementById("patientSignup");
-
-  if (loginBtn) loginBtn.addEventListener("click", () => openModal("patientLogin"));
-  if (signupBtn) signupBtn.addEventListener("click", () => openModal("patientSignup"));
 });
 
+// Load doctors
 async function loadDoctorCards() {
   try {
     const doctors = await getDoctors();
-    renderDoctors(doctors);
+    renderDoctorCards(doctors);
   } catch (err) {
     console.error("Failed to load doctors:", err);
     const contentDiv = document.getElementById("content");
@@ -40,26 +43,31 @@ async function loadDoctorCards() {
   }
 }
 
+// Filter doctors on input/change
 async function filterDoctorsOnChange() {
-  const name = document.getElementById("searchBar")?.value.trim() || null;
-  const time = document.getElementById("filterTime")?.value || null;
-  const specialty = document.getElementById("filterSpecialty")?.value || null;
+  const name = document.getElementById("searchBar")?.value.trim() || "";
+  const time = document.getElementById("filterTime")?.value || "";
+  const specialty = document.getElementById("filterSpecialty")?.value || "";
 
   try {
-    const response = await filterDoctors(name, time, specialty);
-    const doctors = response.doctors || [];
-    if (doctors.length > 0) renderDoctors(doctors);
-    else {
-      const contentDiv = document.getElementById("content");
-      if (contentDiv) contentDiv.innerHTML = "<p>No doctors found with the given filters.</p>";
+    let doctors = [];
+    if (!name && !time && !specialty) {
+      // If all filters cleared, load all doctors
+      doctors = await getDoctors();
+    } else {
+      doctors = await filterDoctors(name, time, specialty);
     }
+
+    if (doctors.length > 0) renderDoctorCards(doctors);
+    else document.getElementById("content").innerHTML = "<p>No doctors found.</p>";
   } catch (err) {
-    console.error("Error filtering doctors:", err);
-    alert("An error occurred while filtering doctors.");
+    console.error(err);
+    alert("Error filtering doctors.");
   }
 }
 
-function renderDoctors(doctors) {
+// Render doctor cards
+function renderDoctorCards(doctors) {
   const contentDiv = document.getElementById("content");
   if (!contentDiv) return;
 
@@ -70,8 +78,7 @@ function renderDoctors(doctors) {
   });
 }
 
-
-// SIGNUP
+// --- SIGNUP ---
 window.signupPatient = async function () {
   try {
     const name = document.getElementById("signupName").value;
@@ -91,8 +98,7 @@ window.signupPatient = async function () {
   }
 };
 
-
-// LOGIN
+// --- LOGIN ---
 window.loginPatient = async function () {
   try {
     const email = document.getElementById("loginEmail").value;
@@ -105,6 +111,9 @@ window.loginPatient = async function () {
       // store token + role
       localStorage.setItem("token", result.token);
       localStorage.setItem("userRole", "loggedPatient"); 
+
+      // Save patient info for booking
+      localStorage.setItem("loggedPatient", JSON.stringify(result.patient));
 
       alert("Login successful!");
       window.location.href = "/pages/loggedPatientDashboard.html";

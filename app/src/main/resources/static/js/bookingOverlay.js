@@ -21,14 +21,14 @@ export function showBookingOverlay(e, doctor, patient) {
 
   modalApp.innerHTML = `
     <h2>Book Appointment</h2>
-    <input class="input-field" type="text" value="${patient.name}" disabled />
-    <input class="input-field" type="text" value="${doctor.name}" disabled />
-    <input class="input-field" type="text" value="${doctor.specialty}" disabled/>
-    <input class="input-field" type="email" value="${doctor.email}" disabled/>
+    <input class="input-field" type="text" value="${patient?.name || ''}" disabled />
+    <input class="input-field" type="text" value="${doctor?.name || ''}" disabled />
+    <input class="input-field" type="text" value="${doctor?.specialty || ''}" disabled/>
+    <input class="input-field" type="email" value="${doctor?.email || ''}" disabled/>
     <input class="input-field" type="date" id="appointment-date" />
     <select class="input-field" id="appointment-time">
       <option value="">Select time</option>
-      ${doctor.availableTimes.map(t => `<option value="${t}">${t}</option>`).join('')}
+      ${doctor?.availableTimes?.map(t => `<option value="${t}">${t}</option>`).join('') || ''}
     </select>
     <button class="confirm-booking">Confirm Booking</button>
   `;
@@ -54,8 +54,8 @@ export function showBookingOverlay(e, doctor, patient) {
 
     const startTime = time.split('-')[0];
     const appointment = {
-      doctor: { id: doctor.id },
-      patient: { id: patient.id },
+      doctor: { id: doctor?.id },
+      patient: { id: patient?.id },
       appointmentTime: `${date}T${startTime}:00`,
       status: 0
     };
