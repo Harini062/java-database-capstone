@@ -75,7 +75,7 @@ public class DoctorService {
     public List<Doctor> getDoctors() {
         return doctorRepository.findAll();
     }
-
+    
     public int saveDoctor(Doctor doctor) {
         if (doctorRepository.findByEmail(doctor.getEmail()) != null) return -1;
         try {

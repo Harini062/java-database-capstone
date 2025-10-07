@@ -177,13 +177,28 @@
   .modal-content {
     background-color: white;
     margin: auto;
-    padding: 30px;
-    border-radius: 10px;
-    width: 400px;
+    padding: 20px;
+    border-radius: 12px;
+    width: 450px;
+    max-width: 95%;
+    max-height: 90vh;
+    overflow-y: auto;
     position: relative;
     
   }
-  
+  .modal-content .checkbox-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+  .modal-content .checkbox-group label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    white-space: nowrap;  
+}
   .modal-content h2{
     font-size: 32px;
   }
@@ -215,7 +230,6 @@
     margin-top: 10px;
     margin-bottom: 20px;
     width: 100%;
-    appearance: none; /* Remove default OS styles */
     background-color: #fff;
     color: #333;
     cursor: pointer;
@@ -386,7 +400,7 @@ body.modal-open #content,
 body.modal-open main, 
 body.modal-open .wrapper {
     filter: blur(5px);
-    pointer-events: none; /* prevent clicking the background */
+    pointer-events: none;  
 }
 
 

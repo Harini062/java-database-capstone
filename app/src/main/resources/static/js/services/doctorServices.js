@@ -1,6 +1,6 @@
 import { API_BASE_URL } from "../config/config.js";
 
-const DOCTOR_API = API_BASE_URL + '/doctor';
+const DOCTOR_API = API_BASE_URL + 'doctor';
 
 export async function getDoctors() {
     try {
@@ -52,7 +52,7 @@ export async function deleteDoctor(id, token) {
 
 export async function saveDoctor(doctor, token) {
     try {
-        const response = await fetch(DOCTOR_API, {
+        const response = await fetch(`${DOCTOR_API}/${token}`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
