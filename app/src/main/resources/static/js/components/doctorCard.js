@@ -1,12 +1,13 @@
 // doctorCard.js
 import { deleteDoctor } from "../services/doctorServices.js";
 import { getPatientData } from "../services/patientServices.js";
-import { showBookingOverlay } from "../bookingOverlay.js"; 
+import { showBookingOverlay } from "../bookingOverlay.js";
 
 export function createDoctorCard(doctor) {
   const card = document.createElement("div");
   card.classList.add("doctor-card");
 
+  // Doctor Info
   const infoDiv = document.createElement("div");
   infoDiv.classList.add("doctor-info");
 
@@ -29,38 +30,35 @@ export function createDoctorCard(doctor) {
   infoDiv.appendChild(email);
   infoDiv.appendChild(availableTimes);
 
+  // Actions
   const actionsDiv = document.createElement("div");
   actionsDiv.classList.add("card-actions");
 
-  // BOOK NOW button (always visible for patients)
-  const bookNow = document.createElement("button");
-  bookNow.textContent = "Book Now";
-  bookNow.classList.add("btn", "btn-primary");
-
-  bookNow.addEventListener("click", async (e) => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      alert("Please login first to book an appointment.");
-      return;
-    }
-
-    try {
-      const patientData = await getPatientData(token);
-      if (!patientData) {
-        alert("Session expired. Please login again.");
-        return;
-      }
-      showBookingOverlay(e, doctor, patientData);
-    } catch (error) {
-      console.error("Error fetching patient data:", error);
-      alert("Unable to book appointment at this time.");
-    }
-  });
-
-  actionsDiv.appendChild(bookNow);
-
-  // Admin delete button
   const role = localStorage.getItem("userRole");
+
+  // Book Now only for patients
+  if (role === "patient") {
+    const bookNow = document.createElement("button");
+    bookNow.textContent = "Book Now";
+    bookNow.classList.add("btn", "btn-primary");
+
+    bookNow.addEventListener("click", async (e) => {
+      const token = localStorage.getItem("token");
+      if (!token) return alert("Please login first.");
+      try {
+        const patientData = await getPatientData(token);
+        if (!patientData) return alert("Session expired. Please login again.");
+        showBookingOverlay(e, doctor, patientData);
+      } catch (err) {
+        console.error(err);
+        alert("Unable to book appointment.");
+      }
+    });
+
+    actionsDiv.appendChild(bookNow);
+  }
+
+  // Delete only for admin
   if (role === "admin") {
     const removeBtn = document.createElement("button");
     removeBtn.textContent = "Delete";

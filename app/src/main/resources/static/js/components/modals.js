@@ -6,6 +6,7 @@ export function openModal(type) {
       case 'addDoctor':
         modalContent = `
           <h2>Add Doctor</h2>
+          <form id="addDoctorForm">
           <input type="text" id="doctorName" placeholder="Doctor Name" class="input-field">
           <select id="doctorSpecialty" class="input-field select-dropdown">
             <option value="">Specialization</option>
@@ -36,7 +37,8 @@ export function openModal(type) {
               <label><input type="checkbox" name="availability" value="12:00-13:00"> 12:00 PM - 1:00 PM</label>
             </div>
           </div>
-          <button class="dashboard-btn" id="saveDoctorBtn">Save</button>
+          <button type="submit" class="dashboard-btn" id="saveDoctorBtn">Save</button>
+          </form>
         `;
         break;
   
