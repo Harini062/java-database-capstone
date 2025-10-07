@@ -41,8 +41,8 @@ public class AdminService {
     }
 
     // Admin Login -> issue JWT
-    public ResponseEntity<Map<String, String>> login(String email, String password) {
-        Map<String, String> body = new HashMap<>();
+    public ResponseEntity<Map<String, Object>> login(String email, String password) {
+        Map<String, Object> body = new HashMap<>();
         try {
             Admin admin = adminRepository.findByEmail(email);
             if (admin == null || !passwordEncoder.matches(password, admin.getPassword())) {
@@ -53,6 +53,7 @@ public class AdminService {
             String token = tokenService.generateToken(admin.getId(), "admin");
             body.put("token", token);
             body.put("message", "Login successful");
+            body.put("admin",admin);
             return ResponseEntity.ok(body);
 
         } catch (Exception ex) {

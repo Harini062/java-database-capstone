@@ -22,6 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
   loadDoctorCards();
 });
 
+
 // Load all doctors
 async function loadDoctorCards() {
   try {
@@ -73,7 +74,7 @@ async function filterDoctorsOnChange() {
 }
 
 // Add Doctor
-async function adminAddDoctor(event) {
+window.adminAddDoctor =async function(event) {
   event.preventDefault();
 
   try {

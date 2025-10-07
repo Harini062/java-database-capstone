@@ -53,8 +53,8 @@ public class DoctorService {
     }
 
     // --- Doctor login validation (needed by controller) ---
-    public ResponseEntity<Map<String, String>> validateDoctor(Map<String, String> login) {
-        Map<String, String> response = new HashMap<>();
+    public ResponseEntity<Map<String, Object>> validateDoctor(Map<String, String> login) {
+        Map<String, Object> response = new HashMap<>();
         String email = login.get("email");
         String password = login.get("password");
 
@@ -67,6 +67,7 @@ public class DoctorService {
         String token = tokenService.generateToken(doctor.getId(), "doctor");
         response.put("token", token);
         response.put("message", "Login successful");
+        response.put("doctor",doctor);
         return ResponseEntity.ok(response);
     }
 

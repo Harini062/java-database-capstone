@@ -38,7 +38,6 @@ export function renderDoctorCards(doctors) {
   try {
     const storedPatient = localStorage.getItem("loggedPatient");
     if (storedPatient) patient = JSON.parse(storedPatient);
-    console.log("Loaded patient from localStorage:", patient);
   } catch (e) {
     console.warn("No logged-in patient found in localStorage");
     patient = null;

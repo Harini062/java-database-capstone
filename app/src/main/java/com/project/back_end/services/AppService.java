@@ -50,13 +50,14 @@ public class AppService {
     }
 
     // Validate Admin Login
-    public ResponseEntity<Map<String, String>> validateAdmin(Admin receivedAdmin) {
-        Map<String, String> response = new HashMap<>();
+    public ResponseEntity<Map<String, Object>> validateAdmin(Admin receivedAdmin) {
+        Map<String, Object> response = new HashMap<>();
         try {
             Admin admin = adminRepository.findByEmail(receivedAdmin.getEmail());
             if (admin != null && admin.getPassword().equals(receivedAdmin.getPassword())) {
                 String token = tokenService.generateToken(admin.getId(), "admin");
                 response.put("token", token);
+                response.put("admin",admin);
                 return ResponseEntity.ok(response);
             }
             response.put("message", "Invalid credentials");
@@ -108,13 +109,14 @@ public class AppService {
     }
 
     //  Validate Patient Login
-    public ResponseEntity<Map<String, String>> validatePatientLogin(LoginDTO login) {
-        Map<String, String> response = new HashMap<>();
+    public ResponseEntity<Map<String, Object>> validatePatientLogin(LoginDTO login) {
+        Map<String, Object> response = new HashMap<>();
         try {
             Patient patient = patientRepository.findByEmail(login.getEmail());
             if (patient != null && patient.getPassword().equals(login.getPassword())) {
                 String token = tokenService.generateToken(patient.getId(), "patient");
                 response.put("token", token);
+                response.put("patient",patient);
                 return ResponseEntity.ok(response);
             }
             response.put("message", "Invalid credentials");
