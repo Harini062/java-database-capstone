@@ -21,9 +21,19 @@ export function createDoctorCard(doctor) {
   email.textContent = `Email: ${doctor.email}`;
 
   const availableTimes = document.createElement("p");
-  availableTimes.textContent = `Available: ${
-    Array.isArray(doctor.availableTimes) ? doctor.availableTimes.join(", ") : "N/A"
-  }`;
+  availableTimes.textContent = "Available: ";
+    if (Array.isArray(doctor.availableTimes) && doctor.availableTimes.length > 0) {
+      const timesSpan = document.createElement("span");
+      timesSpan.style.display = "block";
+      timesSpan.style.marginTop = "4px";
+      timesSpan.textContent = doctor.availableTimes.join(" | ");
+      availableTimes.appendChild(timesSpan);
+    } else {
+      const naSpan = document.createElement("span");
+      naSpan.textContent = "N/A";
+      availableTimes.appendChild(naSpan);
+    }
+
 
   infoDiv.appendChild(name);
   infoDiv.appendChild(specialty);

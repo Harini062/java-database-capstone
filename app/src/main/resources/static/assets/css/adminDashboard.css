@@ -167,14 +167,14 @@ button:hover {
 .modal-content .checkbox-group {
     display: flex;
     flex-wrap: wrap;
-    gap: 10px;
+    gap: 1px;
     margin-bottom: 15px;
 }
 
 .modal-content .checkbox-group label {
     display: flex;
     align-items: center;
-    gap: 5px;
+    gap: 1px;
     white-space: nowrap;  
 }
 body.modal-open {

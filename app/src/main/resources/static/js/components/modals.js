@@ -31,8 +31,8 @@ export function openModal(type) {
           <input type="email" id="doctorEmail" placeholder="Email" class="input-field">
           <label for="doctorPassword">Password</label>
           <input type="password" id="doctorPassword" placeholder="Password" class="input-field">
-          <label for="doctorMobile">Phone</label>
-          <input type="text" id="doctorMobile" placeholder="Mobile No." class="input-field">
+          <label for="doctorPhone">Phone</label>
+          <input type="text" id="doctorPhone" placeholder="Phone No." class="input-field">
           <div class="availability-container">
             <label class="availabilityLabel">Select Availability:</label>
             <div class="checkbox-group">
@@ -123,6 +123,7 @@ export function openModal(type) {
 export function closeModal(modalId) {
     const modal = document.getElementById(modalId);
     if (modal) modal.style.display = "none";
+    document.body.classList.remove("modal-open");
 }
 
   
