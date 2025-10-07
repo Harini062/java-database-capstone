@@ -64,7 +64,7 @@ export function openModal(type) {
       case 'adminLogin':
         modalContent = `
           <h2>Admin Login</h2>
-          <input type="text" id="adminUsername" placeholder="Username" class="input-field">
+          <input type="text" id="adminEmail" placeholder="Email" class="input-field">
           <input type="password" id="adminPassword" placeholder="Password" class="input-field">
           <button class="dashboard-btn" id="adminLoginBtn">Login</button>
         `;

@@ -43,7 +43,7 @@ public class TokenService {
                 .claim("role", role)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + 7L * 24 * 60 * 60 * 1000)) // 7 days
-                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
+                .signWith(SignatureAlgorithm.HS256, getSigningKey())
                 .compact();
     }
 
@@ -100,8 +100,7 @@ public class TokenService {
     }
   
 
-    private SecretKey getSigningKey() {
-        byte[] keyBytes = secret.getBytes(StandardCharsets.UTF_8);
-        return Keys.hmacShaKeyFor(keyBytes);
+    private byte[] getSigningKey() {
+        return secret.getBytes(StandardCharsets.UTF_8);
     }
 }

@@ -5,7 +5,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Doctor Dashboard</title>
-  <link rel="icon" type="image/svg+xml" th:href="{/assets/images/logo/logo.png}" />
+  <link rel="icon" type="image/svg+xml" th:href="@{/assets/images/logo/logo.png}" />
   <link rel="stylesheet" th:href="@{/assets/css/adminDashboard.css}">
   <link rel="stylesheet" th:href="@{/assets/css/doctorDashboard.css}">
   <link rel="stylesheet" th:href="@{/assets/css/style.css}">
@@ -44,6 +44,6 @@
     </div>
   </div>
 
-  <script type="module" src="../js/services/doctorDashboard.js" defer></script>
+  <script type="module" th:src="@{/js/services/doctorDashboard.js}" defer></script>
 </body>
 </html>
