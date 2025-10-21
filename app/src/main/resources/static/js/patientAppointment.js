@@ -11,23 +11,25 @@ let patientId = null;
 document.addEventListener("DOMContentLoaded", initializePage);
 
 async function initializePage() {
-  try {
-    if (!token) throw new Error("No token found");
-
-    const patient = await getPatientData(token);
-    if (!patient) throw new Error("Failed to fetch patient details");
-
-    patientId = Number(patient.id);
-
-    const appointmentData = await getPatientAppointments(patientId, token, "patient") || [];
-    allAppointments = appointmentData.filter(app => app.patientId === patientId);
-
-    renderAppointments(allAppointments);
-  } catch (error) {
-    console.error("Error loading appointments:", error);
-    alert("❌ Failed to load your appointments.");
+    try {
+      if (!token) throw new Error("No token found");
+  
+      const patientResponse = await getPatientData(token);
+      const patient = patientResponse?.patient;
+      if (!patient) throw new Error("Failed to fetch patient details");
+  
+      patientId = Number(patient.id);
+      if (!patientId || isNaN(patientId)) throw new Error("Invalid patient ID");
+  
+      const appointmentData = await getPatientAppointments(patientId, token) || [];
+      allAppointments = appointmentData.filter(app => app.patientId === patientId);
+  
+      renderAppointments(allAppointments);
+    } catch (error) {
+      console.error("Error loading appointments:", error);
+      alert("Failed to load your appointments.");
+    }
   }
-}
 
 function renderAppointments(appointments) {
   tableBody.innerHTML = "";

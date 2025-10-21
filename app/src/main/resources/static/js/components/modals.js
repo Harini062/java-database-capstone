@@ -63,12 +63,14 @@ export function openModal(type) {
       case 'patientSignup':
         modalContent = `
           <h2>Patient Signup</h2>
+          <form id="signupForm">
           <input type="text" id="signupName" placeholder="Name" class="input-field">
           <input type="email" id="signupEmail" placeholder="Email" class="input-field">
           <input type="password" id="signupPassword" placeholder="Password" class="input-field">
           <input type="text" id="signupPhone" placeholder="Phone" class="input-field">
           <input type="text" id="signupAddress" placeholder="Address" class="input-field">
-          <button class="dashboard-btn" id="signupBtn">Signup</button>
+          <button type="button" class="dashboard-btn" id="signupBtn">Signup</button>
+          </form>
         `;
         break;
   

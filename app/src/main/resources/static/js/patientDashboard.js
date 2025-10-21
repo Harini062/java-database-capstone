@@ -2,7 +2,7 @@
 import { getDoctors, filterDoctors } from './services/doctorServices.js';
 import { createDoctorCard } from './components/doctorCard.js';
 import { renderHeader } from './components/header.js';
-import { openModal } from './components/modals.js';
+import { openModal,closeModal } from './components/modals.js';
 import { patientSignup, patientLogin } from "./services/patientServices.js";
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -84,18 +84,24 @@ window.signupPatient = async function () {
     const name = document.getElementById("signupName").value;
     const email = document.getElementById("signupEmail").value;
     const password = document.getElementById("signupPassword").value;
+    const phone = document.getElementById("signupPhone").value.trim();
+    const address = document.getElementById("signupAddress").value.trim();
 
-    const response = await patientSignup({ name, email, password });
-    if (response.ok) {
+    const response = await patientSignup({ name, email, password, phone, address });
+    console.log("Signup response:", response);
+    if (response.success) {
       alert("Signup successful! Please log in.");
-      document.getElementById("signupForm").reset();
+      const signupForm =document.getElementById("signupForm");
+      if (signupForm) signupForm.reset();
     } else {
-      alert("Signup failed. Try again.");
+      alert(`Signup failed: ${response.message}`);
+      
     }
   } catch (error) {
     console.error("Signup error:", error);
     alert("Failed to sign up.");
   }
+  closeModal("modal");
 };
 
 // --- LOGIN ---

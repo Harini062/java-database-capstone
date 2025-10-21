@@ -216,18 +216,30 @@ public class PatientService {
     private AppointmentDTO toDTO(Appointment a) {
         Doctor d = a.getDoctor();
         Patient p = a.getPatient();
-
+    
+        Long doctorId = (d != null) ? d.getId() : null;
+        String doctorName = (d != null) ? d.getName() : "Unknown Doctor";
+    
+        Long patientId = (p != null) ? p.getId() : null;
+        String patientName = (p != null) ? p.getName() : "Unknown Patient";
+        String patientEmail = (p != null) ? p.getEmail() : "";
+        String patientPhone = (p != null) ? p.getPhone() : "";
+        String patientAddress = (p != null) ? p.getAddress() : "";
+    
+        LocalDateTime appointmentTime = a.getAppointmentTime();
+        Integer status = (a.getStatus() != null) ? a.getStatus() : 0;
+    
         return new AppointmentDTO(
-                a.getId(),
-                d != null ? d.getId() : null,
-                d != null ? d.getName() : null,
-                p != null ? p.getId() : null,
-                p != null ? p.getName() : null,
-                p != null ? p.getEmail() : null,
-                p != null ? p.getPhone() : null,
-                p != null ? p.getAddress() : null,
-                a.getAppointmentTime(),
-                a.getStatus() == null ? 0 : a.getStatus()
+            a.getId(),  
+            doctorId,
+            doctorName,
+            patientId,
+            patientName,
+            patientEmail,
+            patientPhone,
+            patientAddress,
+            appointmentTime,
+            status
         );
     }
 }

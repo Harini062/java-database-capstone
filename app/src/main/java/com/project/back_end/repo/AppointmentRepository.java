@@ -4,6 +4,7 @@ import com.project.back_end.models.Appointment;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,13 +22,17 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
 
     // 2. Filter by doctor ID, partial patient name (case-insensitive), and time range
     @Query("SELECT a FROM Appointment a " +
-           "LEFT JOIN FETCH a.doctor d " +
-           "LEFT JOIN FETCH a.patient p " +
+           "JOIN a.doctor d " +
+           "JOIN a.patient p " +
            "WHERE d.id = :doctorId " +
-           "AND LOWER(p.name) LIKE LOWER(CONCAT('%', :patientName, '%')) " +
+           "AND (:patientName IS NULL OR LOWER(p.name) LIKE LOWER(CONCAT('%', :patientName, '%'))) " +
            "AND a.appointmentTime BETWEEN :start AND :end")
-    List<Appointment> findByDoctorIdAndPatient_NameContainingIgnoreCaseAndAppointmentTimeBetween(
-            Long doctorId, String patientName, LocalDateTime start, LocalDateTime end);
+    List<Appointment> findAppointmentsByDoctorAndPatientNameAndDate(
+            @Param("doctorId") Long doctorId,
+            @Param("patientName") String patientName,
+            @Param("start") LocalDateTime start,
+            @Param("end") LocalDateTime end
+    );
 
     // 3. Delete all appointments related to a doctor
     @Transactional

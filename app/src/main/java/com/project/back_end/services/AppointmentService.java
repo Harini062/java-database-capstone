@@ -122,6 +122,9 @@ public class AppointmentService {
         try {
             // Extract doctor ID from token
             Long doctorId = tokenService.extractDoctorId(token);
+            System.out.println("Doctor ID from token: " + doctorId);
+            System.out.println("Token role: " + tokenService.extractRole(token));
+            System.out.println("Appointments fetched for doctorId=" + doctorId + " on date=" + date);
             if (doctorId == null) {
                 response.put("message", "Unauthorized: Invalid doctor token");
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
@@ -130,16 +133,10 @@ public class AppointmentService {
             LocalDateTime start = date.atStartOfDay();
             LocalDateTime end = date.atTime(23, 59, 59);
 
-            List<Appointment> appointments;
-            if (pname != null && !pname.trim().isEmpty()) {
-                appointments = appointmentRepository
-                        .findByDoctorIdAndPatient_NameContainingIgnoreCaseAndAppointmentTimeBetween(
-                                doctorId, pname, start, end
-                        );
-            } else {
-                appointments = appointmentRepository
-                        .findByDoctorIdAndAppointmentTimeBetween(doctorId, start, end);
-            }
+            String patientNameFilter = (pname != null && !pname.equalsIgnoreCase("all")) ? pname : null;
+
+            List<Appointment> appointments = appointmentRepository
+                .findAppointmentsByDoctorAndPatientNameAndDate(doctorId, patientNameFilter, start, end);
 
             List<AppointmentDTO> dtos = appointments.stream()
                     .map(AppointmentDTO::fromEntity)

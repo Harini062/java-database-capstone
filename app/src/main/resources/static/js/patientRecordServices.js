@@ -24,7 +24,7 @@ async function initializePage() {
     renderAppointments(filteredAppointments);
   } catch (error) {
     console.error("Error loading appointments:", error);
-    alert("❌ Failed to load your appointments.");
+    alert("Failed to load your appointments.");
   }
 }
 

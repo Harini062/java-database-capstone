@@ -33,7 +33,11 @@ public class AppointmentController {
                     .body(Map.of("error", "Invalid or expired token. Only doctors can access appointments."));
         }
         java.time.LocalDate localDate = java.time.LocalDate.parse(date);
-        return ResponseEntity.ok(appointmentService.getAppointment(patientName, localDate,token));
+        if ("all".equalsIgnoreCase(patientName)) {
+            return ResponseEntity.ok(appointmentService.getAppointment(null, localDate, token));
+        } else {
+            return ResponseEntity.ok(appointmentService.getAppointment(patientName, localDate, token));
+        }
     }
 
     //Book an appointment (Patient only)

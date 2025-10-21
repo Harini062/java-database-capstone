@@ -4,20 +4,34 @@ const PATIENT_API = API_BASE_URL + 'patient';
 
 // Signup
 export async function patientSignup(data) {
-  try {
-    const response = await fetch(PATIENT_API, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data)
-    });
-
-    const result = await response.json();
-    return { success: response.ok, message: result.message };
-  } catch (err) {
-    console.error("Error during patient signup:", err);
-    return { success: false, message: "Something went wrong during signup" };
+    try {
+      console.log("Sending signup data:", data);
+      const response = await fetch(PATIENT_API, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+      });
+  
+      let result = {};
+      try {
+        result = await response.json();
+        
+      } catch (err) {
+        const text = await response.text();
+        console.warn("No JSON body returned from backend");
+        result.message = text || "No response from server";
+      }
+  
+      if (response.status === 201) {
+        return { success: true, message: result.message || "Patient registered successfully" };
+      } else {
+        return { success: false, message: result.message || `Signup failed with status ${response.status}` };
+      }
+    } catch (err) {
+      console.error("Error during patient signup:", err);
+      return { success: false, message: "Something went wrong during signup" };
+    }
   }
-}
 
 // Login
 export async function patientLogin(data) {
@@ -64,3 +78,10 @@ export async function getPatientAppointments(id, token) {
     return null;
   }
 }
+export async function filterAppointments(patientId, filter) {
+    const token = localStorage.getItem("token");
+    const response = await fetch(`${PATIENT_API}/appointments/${patientId}?filter=${filter}&token=${token}`);
+    if (!response.ok) throw new Error("Failed to fetch filtered appointments");
+    return await response.json();
+  }
+  

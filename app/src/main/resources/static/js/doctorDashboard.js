@@ -5,12 +5,12 @@ import { createPatientRow } from "./components/patientRows.js";
 const patientTableBody = document.getElementById("patientTableBody");
 let selectedDate = new Date().toISOString().split("T")[0]; 
 const token = localStorage.getItem("token");
-let patientName = null;
+let patientName ="";
 
 
 document.getElementById("searchBar").addEventListener("input", (event) => {
   const value = event.target.value.trim();
-  patientName = value.length > 0 ? value : "null";
+  patientName = value;
   loadAppointments();
 });
 
@@ -30,7 +30,8 @@ document.getElementById("datePicker").addEventListener("change", (event) => {
 
 async function loadAppointments() {
   try {
-    const appointments = await getAllAppointments(selectedDate, patientName, token);
+    const data= await getAllAppointments(selectedDate, patientName, token);
+    const appointments = data.appointments || [];
 
     
     patientTableBody.innerHTML = "";
@@ -38,7 +39,7 @@ async function loadAppointments() {
     if (!appointments || appointments.length === 0) {
       const row = document.createElement("tr");
       row.innerHTML = `
-        <td colspan="4" class="text-center py-4">No Appointments found for today.</td>
+        <td colspan="4" class="text-center py-4">No Appointments found for this date.</td>
       `;
       patientTableBody.appendChild(row);
       return;
@@ -46,7 +47,7 @@ async function loadAppointments() {
 
     appointments.forEach((appt) => {
       const patient = {
-        id: appt.id,
+        id: appt.patientId,
         name: appt.patientName,
         phone: appt.patientPhone,
         email: appt.patientEmail,

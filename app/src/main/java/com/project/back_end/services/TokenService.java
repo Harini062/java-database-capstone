@@ -72,11 +72,31 @@ public class TokenService {
  
 
     public Long extractPatientId(String token) {
-        return extractUserId(token);
+        try {
+            Claims claims = extractAllClaims(token);
+            String role = claims.get("role", String.class);
+            if (!"patient".equalsIgnoreCase(role)) {
+                return null;
+            }
+            return Long.valueOf(claims.getSubject());
+        } catch (Exception e) {
+            System.out.println("Failed to extract patient ID: " + e.getMessage());
+            return null;
+        }
     }
 
     public Long extractDoctorId(String token) {
-        return extractUserId(token);
+        try {
+            Claims claims = extractAllClaims(token);
+            String role = claims.get("role", String.class);
+            if (!"doctor".equalsIgnoreCase(role)) {
+                return null;
+            }
+            return Long.valueOf(claims.getSubject());
+        } catch (Exception e) {
+            System.out.println("Failed to extract doctor ID: " + e.getMessage());
+            return null;
+        }
     }
 
     
