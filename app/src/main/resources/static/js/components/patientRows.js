@@ -16,6 +16,10 @@ export function createPatientRow(patient, appointmentId, doctorId) {
   });
 
   tr.querySelector(".prescription-btn").addEventListener("click", () => {
+    if (!appointmentId) {
+      alert("Appointment ID missing. Cannot add prescription.");
+      return;
+    }
     window.location.href = `/pages/addPrescription.html?appointmentId=${appointmentId}&patientName=${patient.name}`;
   });
 

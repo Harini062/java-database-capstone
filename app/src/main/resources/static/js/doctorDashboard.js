@@ -52,7 +52,7 @@ async function loadAppointments() {
         phone: appt.patientPhone,
         email: appt.patientEmail,
       };
-      const row = createPatientRow(patient);
+      const row = createPatientRow(patient,appt.id,appt.doctorId);
       patientTableBody.appendChild(row);
     });
   } 

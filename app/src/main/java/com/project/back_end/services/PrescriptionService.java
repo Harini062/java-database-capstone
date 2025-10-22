@@ -78,8 +78,9 @@ public class PrescriptionService {
 
             List<Prescription> prescriptions = prescriptionRepository.findByAppointmentId(appointmentId);
             if (prescriptions == null || prescriptions.isEmpty()) {
-                response.put("message", "Prescriptions not found for appointmentId: " + appointmentId);
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+                response.put("message", "No prescription exists yet for appointmentId: " + appointmentId);
+                response.put("prescriptions", List.of());
+                return ResponseEntity.ok(response);     
             }
 
             response.put("prescriptions", prescriptions);
