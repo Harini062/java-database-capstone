@@ -18,7 +18,7 @@ export async function getAllAppointments(date, patientName, token) {
   
     const data = await response.json();
 
-    return data.appointments || data; 
+    return data.body || {}; 
 }
 
 export async function bookAppointment(appointment, token) {

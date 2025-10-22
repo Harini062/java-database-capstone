@@ -22,8 +22,8 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
 
     // 2. Filter by doctor ID, partial patient name (case-insensitive), and time range
     @Query("SELECT a FROM Appointment a " +
-           "JOIN a.doctor d " +
-           "JOIN a.patient p " +
+           "JOIN FETCH a.doctor d " +
+           "JOIN FETCH a.patient p " +
            "WHERE d.id = :doctorId " +
            "AND (:patientName IS NULL OR LOWER(p.name) LIKE LOWER(CONCAT('%', :patientName, '%'))) " +
            "AND a.appointmentTime BETWEEN :start AND :end")

@@ -122,9 +122,7 @@ public class AppointmentService {
         try {
             // Extract doctor ID from token
             Long doctorId = tokenService.extractDoctorId(token);
-            System.out.println("Doctor ID from token: " + doctorId);
-            System.out.println("Token role: " + tokenService.extractRole(token));
-            System.out.println("Appointments fetched for doctorId=" + doctorId + " on date=" + date);
+        
             if (doctorId == null) {
                 response.put("message", "Unauthorized: Invalid doctor token");
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
@@ -133,10 +131,20 @@ public class AppointmentService {
             LocalDateTime start = date.atStartOfDay();
             LocalDateTime end = date.atTime(23, 59, 59);
 
-            String patientNameFilter = (pname != null && !pname.equalsIgnoreCase("all")) ? pname : null;
+            String patientNameFilter = (pname != null && !"all".equalsIgnoreCase(pname)) ? pname : null;
 
             List<Appointment> appointments = appointmentRepository
                 .findAppointmentsByDoctorAndPatientNameAndDate(doctorId, patientNameFilter, start, end);
+
+            
+            if (appointments.isEmpty()) {
+                System.out.println("No appointments found for doctorId=" + doctorId + " on " + date);
+            } else {
+                appointments.forEach(a ->
+                    System.out.println("Appointment: " + a.getId() + " | Patient: " + a.getPatient().getName() + " | Time: " + a.getAppointmentTime())
+                );
+            }
+
 
             List<AppointmentDTO> dtos = appointments.stream()
                     .map(AppointmentDTO::fromEntity)
@@ -146,6 +154,7 @@ public class AppointmentService {
             return ResponseEntity.ok(response);
 
         } catch (Exception e) {
+            e.printStackTrace();
             response.put("message", "Failed to fetch appointments: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
