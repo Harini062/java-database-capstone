@@ -29,7 +29,7 @@ public class DoctorService {
 
     private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-    // --- Doctor availability (needed by controller) ---
+    // Doctor availability 
     public List<String> getDoctorAvailability(Long doctorId, LocalDate date) {
         List<Appointment> appointments = appointmentRepository
                 .findByDoctorIdAndAppointmentTimeBetween(
@@ -52,7 +52,7 @@ public class DoctorService {
                 .collect(Collectors.toList());
     }
 
-    // --- Doctor login validation (needed by controller) ---
+    // Doctor login validation
     public ResponseEntity<Map<String, Object>> validateDoctor(Map<String, String> login) {
         Map<String, Object> response = new HashMap<>();
         String email = login.get("email");
@@ -71,7 +71,7 @@ public class DoctorService {
         return ResponseEntity.ok(response);
     }
 
-    // --- Basic CRUD methods ---
+    
     public List<Doctor> getDoctors() {
         return doctorRepository.findAll();
     }
@@ -114,7 +114,7 @@ public class DoctorService {
         }
     }
 
-    // --- Filtering Methods ---
+    // Filtering Methods 
     public List<Doctor> filterDoctor(String name, String amOrPm, String specialty) {
         final String finalName = (name == null) ? "" : name.trim();
         final String finalSpecialty = (specialty == null) ? "" : specialty.trim();
@@ -167,7 +167,7 @@ public class DoctorService {
                     return true;
                 }
             } catch (NumberFormatException e) {
-                // ignore invalid time format
+            
             }
         }
         return false;
@@ -175,7 +175,7 @@ public class DoctorService {
     
     
 
-    // --- Wrapper methods for all combinations ---
+    // Wrapper methods for all combinations 
     public List<Doctor> filterDoctorsByNameSpecialityAndTime(String name, String specialty, String amOrPm) {
         return filterDoctor(name, amOrPm, specialty);
     }
