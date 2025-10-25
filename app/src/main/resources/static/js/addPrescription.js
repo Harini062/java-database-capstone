@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (appointmentId && token) {
       const response = await getPrescription(appointmentId, token);
 
-      // Now, check if the prescription exists in the response and access it from the array
+      // check if the prescription exists in the response and access it from the array
       if (response) {
         const existingPrescription = response[0]; // Access first prescription object
         patientNameInput.value = existingPrescription.patientName || "";;
@@ -53,7 +53,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     medicinesInput.disabled = true;
     dosageInput.disabled = true;
     notesInput.disabled = true;
-    savePrescriptionBtn.style.display = "none";  // Hide the save button
+    savePrescriptionBtn.style.display = "none";  
   }
   // Save prescription on button click
   savePrescriptionBtn.addEventListener('click', async (e) => {
@@ -70,10 +70,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     const { success, message } = await savePrescription(prescription, token);
 
     if (success) {
-      alert("✅ Prescription saved successfully.");
+      alert("Prescription saved successfully.");
       selectRole('doctor');
     } else {
-      alert("❌ Failed to save prescription. " + message);
+      alert("Failed to save prescription. " + message);
     }
   });
 });
