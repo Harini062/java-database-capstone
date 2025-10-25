@@ -33,7 +33,7 @@ export function renderDoctorCards(doctors) {
 
   contentDiv.innerHTML = "";
 
-  // Safely get patient from localStorage
+
   let patient = null;
   try {
     const storedPatient = localStorage.getItem("loggedPatient");
@@ -46,7 +46,6 @@ export function renderDoctorCards(doctors) {
   doctors.forEach((doctor) => {
     const card = createDoctorCard(doctor);
 
-    // Add Book Now listener if patient is logged in
     const bookBtn = card.querySelector(".book-now");
     if (bookBtn) {
       bookBtn.addEventListener("click", (e) => {
@@ -71,7 +70,7 @@ async function filterDoctorsOnChange() {
   try {
     let doctors = [];
     if (!name && !time && !specialty) {
-      doctors = await getDoctors(); // reset to original list
+      doctors = await getDoctors(); 
     } else {
       doctors = await filterDoctors(name, time, specialty);
     }
