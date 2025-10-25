@@ -6,10 +6,7 @@ import { openModal,closeModal } from './components/modals.js';
 import { patientSignup, patientLogin } from "./services/patientServices.js";
 
 document.addEventListener("DOMContentLoaded", async () => {
-  // Render header first
   renderHeader();
-
-  // Wait until header is in DOM before attaching event listeners
   setTimeout(() => {
     const searchBar = document.getElementById("searchBar");
     const filterTime = document.getElementById("filterTime");
@@ -19,13 +16,13 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (filterTime) filterTime.addEventListener("change", filterDoctorsOnChange);
     if (filterSpecialty) filterSpecialty.addEventListener("change", filterDoctorsOnChange);
 
-    // Header login/signup buttons
+
     const loginBtn = document.getElementById("patientLogin");
     const signupBtn = document.getElementById("patientSignup");
 
     if (loginBtn) loginBtn.addEventListener("click", () => openModal("patientLogin"));
     if (signupBtn) signupBtn.addEventListener("click", () => openModal("patientSignup"));
-  }, 50); // small delay to ensure DOM exists
+  }, 50); 
 
   // Load doctors initially
   await loadDoctorCards();
@@ -52,7 +49,6 @@ async function filterDoctorsOnChange() {
   try {
     let doctors = [];
     if (!name && !time && !specialty) {
-      // If all filters cleared, load all doctors
       doctors = await getDoctors();
     } else {
       doctors = await filterDoctors(name, time, specialty);
@@ -78,7 +74,7 @@ function renderDoctorCards(doctors) {
   });
 }
 
-// --- SIGNUP ---
+// SIGNUP
 window.signupPatient = async function () {
   try {
     const name = document.getElementById("signupName").value;
@@ -104,7 +100,7 @@ window.signupPatient = async function () {
   closeModal("modal");
 };
 
-// --- LOGIN ---
+// Login 
 window.loginPatient = async function () {
   try {
     const email = document.getElementById("loginEmail").value;
@@ -114,7 +110,7 @@ window.loginPatient = async function () {
     if (response.ok) {
       const result = await response.json();
 
-      // store token + role
+
       localStorage.setItem("token", result.token);
       localStorage.setItem("userRole", "loggedPatient"); 
 
