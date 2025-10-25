@@ -4,7 +4,8 @@ import { getDoctors } from "../js/services/doctorServices.js";
 document.addEventListener("DOMContentLoaded", initializePage);
 
 async function initializePage() {
-  const token = localStorage.getItem("token"); // Assuming token is stored in localStorage
+  const token = localStorage.getItem("token");  
+  
   // Get appointmentId and patientId from the URL query parameters
   const urlParams = new URLSearchParams(window.location.search);
   const appointmentId = urlParams.get("appointmentId");
@@ -25,7 +26,6 @@ async function initializePage() {
   // get doctor to display only the available time of doctor
   getDoctors()
     .then(doctors => {
-      // Find the doctor by the ID from the URL
       const doctor = doctors.find(d => d.id == doctorId);
       if (!doctor) {
         alert("Doctor not found.");
@@ -46,7 +46,7 @@ async function initializePage() {
         timeSelect.appendChild(option);
       });
 
-      // Handle form submission for updating the appointment
+      
       document.getElementById("updateAppointmentForm").addEventListener("submit", async (e) => {
         e.preventDefault(); // Prevent default form submission
 
@@ -70,14 +70,14 @@ async function initializePage() {
 
         if (updateResponse.success) {
           alert("Appointment updated successfully!");
-          window.location.href = "/pages/patientAppointments.html"; // Redirect back to the appointments page
+          window.location.href = "/pages/patientAppointments.html"; 
         } else {
-          alert("❌ Failed to update appointment: " + updateResponse.message);
+          alert("Failed to update appointment: " + updateResponse.message);
         }
       });
     })
     .catch(error => {
       console.error("Error fetching doctors:", error);
-      alert("❌ Failed to load doctor data.");
+      alert("Failed to load doctor data.");
     });
 }
