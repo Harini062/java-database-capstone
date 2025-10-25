@@ -1,6 +1,6 @@
 /* This is the style sheet for global change across the files. */
-
 /* style.css */
+
 .header {
     display: flex;
     justify-content: space-between;
@@ -13,7 +13,7 @@
     min-height: 60px;
   }
   
-  /* Logo section with image + title */
+
   .logo-link{
     display: flex;
     align-items: center;
@@ -28,14 +28,13 @@
     object-fit: contain;
   }
   
-  /* Logo text / slogan */
+  
   .logo-title {
     font-size: 20px;
     font-weight: bold;
     color: #333;
   }
   
-  /* Nav links styling */
   nav a {
     margin-left: 20px;
     margin-right: 20px;
@@ -80,7 +79,7 @@
   .doctorHeader:hover{
     color:#A62B1F;
   }
-/* Footer Section */
+
 .footer {
     background-color: #f4f4f4;
     color: #fff;
