@@ -39,7 +39,7 @@ public class TokenService {
 
     public String generateToken(Long userId, String role) {
         return Jwts.builder()
-                .setSubject(String.valueOf(userId)) // subject = ID now
+                .setSubject(String.valueOf(userId)) 
                 .claim("role", role)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + 7L * 24 * 60 * 60 * 1000)) // 7 days
@@ -66,7 +66,7 @@ public class TokenService {
     }
 
     public String extractIdentifier(String token) {
-        return extractAllClaims(token).getSubject(); // may be ID or email depending on your token
+        return extractAllClaims(token).getSubject(); 
     }
 
  
