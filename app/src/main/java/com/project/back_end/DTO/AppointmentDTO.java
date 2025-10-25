@@ -22,7 +22,7 @@ public class AppointmentDTO {
     private LocalTime appointmentTimeOnly;
     private LocalDateTime endTime;
 
-    // ✅ No-args constructor
+  
     public AppointmentDTO() {
     }
 
